@@ -1,0 +1,7 @@
+{
+  "name": "tienda-gm-frontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
