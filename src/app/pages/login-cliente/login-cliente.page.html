@@ -1,7 +1,5 @@
 <ion-content>
   <div class="login-wrapper">
-
-    <!-- Fondo con degradado -->
     <div class="bg-gradient"></div>
 
     <div class="login-container">
@@ -9,19 +7,18 @@
       <!-- Logo -->
       <div class="logo-area">
         <div class="logo-icon">
-          <ion-icon name="shirt-outline"></ion-icon>
+          <ion-icon name="bag-handle-outline"></ion-icon>
         </div>
         <h1 class="brand-name">TIENDA GM</h1>
-        <p class="brand-sub">Panel de Administración</p>
+        <p class="brand-sub">Tu tienda de moda favorita</p>
       </div>
 
       <!-- Card -->
       <div class="login-card">
 
-        <h2 class="card-title">Bienvenido</h2>
-        <p class="card-subtitle">Ingresa tus credenciales para continuar</p>
+        <h2 class="card-title">Hola de nuevo</h2>
+        <p class="card-subtitle">Inicia sesión en tu cuenta</p>
 
-        <!-- Campo correo -->
         <div class="input-group">
           <div class="input-icon">
             <ion-icon name="mail-outline"></ion-icon>
@@ -30,12 +27,10 @@
             class="custom-input"
             type="email"
             placeholder="Correo electrónico"
-            [(ngModel)]="correo"
-            autocomplete="email">
+            [(ngModel)]="correo">
           </ion-input>
         </div>
 
-        <!-- Campo contraseña -->
         <div class="input-group">
           <div class="input-icon">
             <ion-icon name="lock-closed-outline"></ion-icon>
@@ -48,25 +43,26 @@
           </ion-input>
         </div>
 
-        <!-- Botón login -->
+        <div class="forgot-link" routerLink="/recuperar-contrasena">
+          ¿Olvidaste tu contraseña?
+        </div>
+
         <button class="btn-login" (click)="iniciarSesion()">
           <span>Ingresar</span>
           <ion-icon name="arrow-forward-outline"></ion-icon>
         </button>
 
-        <!-- Divisor -->
         <div class="divider">
-          <span>¿Eres cliente?</span>
+          <span>¿No tienes cuenta?</span>
         </div>
 
-        <!-- Botones cliente -->
-        <button class="btn-outline" routerLink="/login-cliente">
-          <ion-icon name="person-outline"></ion-icon>
-          <span>Ingresar como Cliente</span>
+        <button class="btn-outline" routerLink="/registro-cliente">
+          <ion-icon name="person-add-outline"></ion-icon>
+          <span>Crear cuenta nueva</span>
         </button>
 
-        <button class="btn-ghost" routerLink="/registro-cliente">
-          <span>Crear cuenta nueva</span>
+        <button class="btn-ghost" routerLink="/login">
+          <span>Acceso administración</span>
         </button>
 
       </div>

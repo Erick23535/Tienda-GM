@@ -1,0 +1,232 @@
+<ion-content style="--background: #0a0a0a;">
+  <div style="min-height:100vh; background: radial-gradient(ellipse at 25% 25%, rgba(212,175,55,0.13) 0%, transparent 55%), #0a0a0a; padding: 28px 20px 48px; display:flex; flex-direction:column; align-items:center;">
+
+    <div style="width:100%; max-width:420px;">
+
+      <!-- Volver -->
+      <div (click)="router.navigate(['/login-cliente'])"
+           style="display:inline-flex; align-items:center; justify-content:center;
+                  width:42px; height:42px; background:rgba(255,255,255,0.05);
+                  border:1px solid rgba(212,175,55,0.3); border-radius:12px;
+                  color:#d4af37; font-size:20px; cursor:pointer; margin-bottom:24px;">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </div>
+
+      <!-- Logo -->
+      <div style="text-align:center; margin-bottom:28px;">
+        <div style="width:64px; height:64px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                    border-radius:18px; display:flex; align-items:center; justify-content:center;
+                    margin:0 auto 12px; box-shadow:0 8px 28px rgba(212,175,55,0.3);">
+          <ion-icon name="key-outline" style="font-size:30px; color:#0a0a0a;"></ion-icon>
+        </div>
+        <h1 style="font-size:22px; font-weight:800; letter-spacing:4px;
+                   background:linear-gradient(135deg,#d4af37,#f5d76e);
+                   -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">
+          TIENDA GM
+        </h1>
+      </div>
+
+      <!-- Pasos -->
+      <div style="display:flex; align-items:center; justify-content:center; margin-bottom:28px;">
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div [style.background]="paso > 1 ? 'linear-gradient(135deg,#d4af37,#f5d76e)' : paso >= 1 ? 'rgba(212,175,55,0.1)' : 'transparent'"
+               [style.border]="paso >= 1 ? '2px solid #d4af37' : '2px solid rgba(255,255,255,0.1)'"
+               [style.color]="paso > 1 ? '#0a0a0a' : paso >= 1 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+               style="width:36px; height:36px; border-radius:50%; display:flex;
+                      align-items:center; justify-content:center; font-size:14px; font-weight:700;">
+            <ion-icon *ngIf="paso > 1" name="checkmark-outline"></ion-icon>
+            <span *ngIf="paso <= 1">1</span>
+          </div>
+          <span [style.color]="paso >= 1 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+                style="font-size:11px; font-weight:500;">Correo</span>
+        </div>
+
+        <div [style.background]="paso > 1 ? 'linear-gradient(90deg,#d4af37,#f5d76e)' : 'rgba(255,255,255,0.07)'"
+             style="width:40px; height:2px; margin:0 6px 18px; border-radius:2px;"></div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div [style.background]="paso > 2 ? 'linear-gradient(135deg,#d4af37,#f5d76e)' : paso >= 2 ? 'rgba(212,175,55,0.1)' : 'transparent'"
+               [style.border]="paso >= 2 ? '2px solid #d4af37' : '2px solid rgba(255,255,255,0.1)'"
+               [style.color]="paso > 2 ? '#0a0a0a' : paso >= 2 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+               style="width:36px; height:36px; border-radius:50%; display:flex;
+                      align-items:center; justify-content:center; font-size:14px; font-weight:700;">
+            <ion-icon *ngIf="paso > 2" name="checkmark-outline"></ion-icon>
+            <span *ngIf="paso <= 2">2</span>
+          </div>
+          <span [style.color]="paso >= 2 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+                style="font-size:11px; font-weight:500;">Seguridad</span>
+        </div>
+
+        <div [style.background]="paso > 2 ? 'linear-gradient(90deg,#d4af37,#f5d76e)' : 'rgba(255,255,255,0.07)'"
+             style="width:40px; height:2px; margin:0 6px 18px; border-radius:2px;"></div>
+
+        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+          <div [style.background]="paso >= 3 ? 'rgba(212,175,55,0.1)' : 'transparent'"
+               [style.border]="paso >= 3 ? '2px solid #d4af37' : '2px solid rgba(255,255,255,0.1)'"
+               [style.color]="paso >= 3 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+               style="width:36px; height:36px; border-radius:50%; display:flex;
+                      align-items:center; justify-content:center; font-size:14px; font-weight:700;">
+            3
+          </div>
+          <span [style.color]="paso >= 3 ? '#d4af37' : 'rgba(255,255,255,0.25)'"
+                style="font-size:11px; font-weight:500;">Nueva clave</span>
+        </div>
+
+      </div>
+
+      <!-- PASO 1 -->
+      <div *ngIf="paso === 1"
+           style="background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.15);
+                  border-radius:24px; padding:28px 24px; backdrop-filter:blur(20px);
+                  box-shadow:0 24px 64px rgba(0,0,0,0.45);">
+
+        <div style="width:48px; height:48px; background:rgba(212,175,55,0.1);
+                    border:1px solid rgba(212,175,55,0.25); border-radius:14px;
+                    display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <ion-icon name="mail-outline" style="font-size:22px; color:#d4af37;"></ion-icon>
+        </div>
+
+        <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 6px;">
+          ¿Olvidaste tu contraseña?
+        </h2>
+        <p style="color:rgba(255,255,255,0.35); font-size:14px; margin:0 0 24px; line-height:1.5;">
+          Ingresa el correo con el que te registraste.
+        </p>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.08); border-radius:14px;
+                    padding:4px 16px; margin-bottom:16px;">
+          <ion-icon name="mail-outline" style="font-size:18px; color:rgba(212,175,55,0.6); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     type="email" placeholder="tucorreo@gmail.com" [(ngModel)]="correo">
+          </ion-input>
+        </div>
+
+        <button (click)="buscarCorreo()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                       border:none; border-radius:14px; color:#0a0a0a; font-size:16px;
+                       font-weight:700; cursor:pointer; display:flex; align-items:center;
+                       justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+          Continuar
+          <ion-icon name="arrow-forward-outline" style="font-size:18px;"></ion-icon>
+        </button>
+      </div>
+
+      <!-- PASO 2 -->
+      <div *ngIf="paso === 2"
+           style="background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.15);
+                  border-radius:24px; padding:28px 24px; backdrop-filter:blur(20px);
+                  box-shadow:0 24px 64px rgba(0,0,0,0.45);">
+
+        <div style="width:48px; height:48px; background:rgba(212,175,55,0.1);
+                    border:1px solid rgba(212,175,55,0.25); border-radius:14px;
+                    display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <ion-icon name="shield-checkmark-outline" style="font-size:22px; color:#d4af37;"></ion-icon>
+        </div>
+
+        <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 6px;">
+          Preguntas de seguridad
+        </h2>
+        <p style="color:rgba(255,255,255,0.35); font-size:14px; margin:0 0 20px; line-height:1.5;">
+          Responde correctamente para verificar tu identidad.
+        </p>
+
+        <p style="color:#d4af37; font-size:13px; font-weight:600; margin:0 0 10px;">
+          {{ pregunta1 }}
+        </p>
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.08); border-radius:14px;
+                    padding:4px 16px; margin-bottom:18px;">
+          <ion-icon name="chatbubble-ellipses-outline" style="font-size:18px; color:rgba(212,175,55,0.6); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Tu respuesta" [(ngModel)]="respuesta1">
+          </ion-input>
+        </div>
+
+        <p style="color:#d4af37; font-size:13px; font-weight:600; margin:0 0 10px;">
+          {{ pregunta2 }}
+        </p>
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.08); border-radius:14px;
+                    padding:4px 16px; margin-bottom:20px;">
+          <ion-icon name="chatbubble-ellipses-outline" style="font-size:18px; color:rgba(212,175,55,0.6); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Tu respuesta" [(ngModel)]="respuesta2">
+          </ion-input>
+        </div>
+
+        <button (click)="verificarRespuestas()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                       border:none; border-radius:14px; color:#0a0a0a; font-size:16px;
+                       font-weight:700; cursor:pointer; display:flex; align-items:center;
+                       justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+          Verificar respuestas
+          <ion-icon name="shield-checkmark-outline" style="font-size:18px;"></ion-icon>
+        </button>
+      </div>
+
+      <!-- PASO 3 -->
+      <div *ngIf="paso === 3"
+           style="background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.15);
+                  border-radius:24px; padding:28px 24px; backdrop-filter:blur(20px);
+                  box-shadow:0 24px 64px rgba(0,0,0,0.45);">
+
+        <div style="width:48px; height:48px; background:rgba(34,197,94,0.1);
+                    border:1px solid rgba(34,197,94,0.25); border-radius:14px;
+                    display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <ion-icon name="lock-open-outline" style="font-size:22px; color:#22c55e;"></ion-icon>
+        </div>
+
+        <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 6px;">
+          Nueva contraseña
+        </h2>
+        <p style="color:rgba(255,255,255,0.35); font-size:14px; margin:0 0 24px; line-height:1.5;">
+          Crea una contraseña segura de mínimo 6 caracteres.
+        </p>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.08); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="lock-closed-outline" style="font-size:18px; color:rgba(212,175,55,0.6); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     type="password" placeholder="Nueva contraseña" [(ngModel)]="contrasena">
+          </ion-input>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.08); border-radius:14px;
+                    padding:4px 16px; margin-bottom:16px;">
+          <ion-icon name="lock-open-outline" style="font-size:18px; color:rgba(212,175,55,0.6); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     type="password" placeholder="Confirmar contraseña" [(ngModel)]="confirmar">
+          </ion-input>
+        </div>
+
+        <!-- Indicador de fortaleza -->
+        <div *ngIf="contrasena.length > 0"
+             style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+          <div style="flex:1; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+            <div [style.width]="contrasena.length >= 8 ? '100%' : contrasena.length >= 6 ? '60%' : '30%'"
+                 [style.background]="contrasena.length >= 8 ? '#22c55e' : contrasena.length >= 6 ? '#d4af37' : '#ef4444'"
+                 style="height:100%; border-radius:2px; transition:all 0.3s;"></div>
+          </div>
+          <span [style.color]="contrasena.length >= 8 ? '#22c55e' : contrasena.length >= 6 ? '#d4af37' : '#ef4444'"
+                style="font-size:12px; font-weight:600; white-space:nowrap;">
+            {{ contrasena.length >= 8 ? 'Segura' : contrasena.length >= 6 ? 'Aceptable' : 'Débil' }}
+          </span>
+        </div>
+
+        <button (click)="guardarContrasena()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                       border:none; border-radius:14px; color:#0a0a0a; font-size:16px;
+                       font-weight:700; cursor:pointer; display:flex; align-items:center;
+                       justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+          Guardar contraseña
+          <ion-icon name="checkmark-circle-outline" style="font-size:18px;"></ion-icon>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

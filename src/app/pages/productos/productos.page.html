@@ -1,0 +1,256 @@
+<ion-content style="--background:#0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
+
+    <!-- Header -->
+    <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div routerLink="/dashboard"
+             style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+        </div>
+        <div>
+          <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; letter-spacing:1px; text-transform:uppercase;">Inventario</p>
+          <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Productos</p>
+        </div>
+      </div>
+      <div *ngIf="!modoFormulario"
+           (click)="abrirFormulario()"
+           style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:12px; padding:8px 14px; cursor:pointer;">
+        <ion-icon name="add-outline" style="font-size:18px; color:#0a0a0a;"></ion-icon>
+        <span style="font-size:13px; font-weight:700; color:#0a0a0a;">Nuevo</span>
+      </div>
+    </div>
+
+    <div style="padding:16px 16px 32px;">
+
+      <!-- LISTA -->
+      <div *ngIf="!modoFormulario">
+
+        <!-- Buscador -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:4px 16px; margin-bottom:20px;">
+          <ion-icon name="search-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:10px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:44px; font-size:15px;"
+                     placeholder="Buscar por nombre o código..."
+                     [(ngModel)]="busqueda" debounce="300">
+          </ion-input>
+        </div>
+
+        <!-- Contador -->
+        <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:0 0 14px;">
+          {{ productosFiltrados.length }} productos encontrados
+        </p>
+
+        <!-- Tarjetas productos -->
+        <div *ngFor="let p of productosFiltrados"
+             style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; margin-bottom:14px; overflow:hidden;">
+
+          <div style="display:flex; gap:0;">
+
+            <!-- Imagen -->
+            <div style="width:110px; min-height:120px; flex-shrink:0; background:rgba(255,255,255,0.03); position:relative; overflow:hidden;">
+              <img *ngIf="p.imagen_url"
+                   [src]="p.imagen_url"
+                   (error)="imagenError($event)"
+                   style="width:100%; height:100%; object-fit:cover; min-height:120px;">
+              <div *ngIf="!p.imagen_url"
+                   style="width:100%; min-height:120px; display:flex; align-items:center; justify-content:center;">
+                <ion-icon name="shirt-outline" style="font-size:36px; color:rgba(212,175,55,0.2);"></ion-icon>
+              </div>
+              <!-- Badge stock bajo -->
+              <div *ngIf="stockBajo(p)"
+                   style="position:absolute; top:6px; left:6px; background:#ef4444; border-radius:6px; padding:2px 6px;">
+                <span style="font-size:10px; font-weight:700; color:#fff;">⚠ Bajo</span>
+              </div>
+            </div>
+
+            <!-- Info -->
+            <div style="flex:1; padding:14px 14px 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex:1;">
+                  <p style="font-size:15px; font-weight:700; color:#fff; margin:0 0 4px;">{{ p.nombre }}</p>
+                  <p style="font-size:12px; color:rgba(212,175,55,0.7); margin:0 0 6px;">
+                    {{ p.categoria }} · {{ p.codigo }}
+                  </p>
+                  <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 2px;">
+                    Talla: {{ p.talla || '-' }} · {{ p.color || '-' }}
+                  </p>
+                  <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">
+                    Compra: ${{ p.precio_compra }}
+                  </p>
+                </div>
+                <!-- Stock y precio -->
+                <div style="text-align:right; flex-shrink:0;">
+                  <p style="font-size:18px; font-weight:800; color:#d4af37; margin:0 0 2px;">
+                    ${{ p.precio_venta }}
+                  </p>
+                  <div [style.background]="stockBajo(p) ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)'"
+                       [style.border]="stockBajo(p) ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(34,197,94,0.3)'"
+                       style="border-radius:8px; padding:3px 8px; margin-top:4px;">
+                    <span [style.color]="stockBajo(p) ? '#ef4444' : '#22c55e'"
+                          style="font-size:13px; font-weight:700;">
+                      {{ p.stock_actual }}
+                    </span>
+                    <span style="font-size:10px; color:rgba(255,255,255,0.4); margin-left:2px;">uds</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <div (click)="abrirFormulario(p)"
+                     style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.25); border-radius:10px; padding:7px; cursor:pointer;">
+                  <ion-icon name="pencil-outline" style="font-size:14px; color:#d4af37;"></ion-icon>
+                  <span style="font-size:12px; font-weight:600; color:#d4af37;">Editar</span>
+                </div>
+                <div (click)="confirmarEliminar(p)"
+                     style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:7px; cursor:pointer;">
+                  <ion-icon name="trash-outline" style="font-size:14px; color:#ef4444;"></ion-icon>
+                  <span style="font-size:12px; font-weight:600; color:#ef4444;">Eliminar</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div *ngIf="productosFiltrados.length === 0"
+             style="text-align:center; padding:48px 20px;">
+          <ion-icon name="shirt-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+          <p style="color:rgba(255,255,255,0.3); margin-top:12px;">No se encontraron productos.</p>
+        </div>
+
+      </div>
+
+      <!-- FORMULARIO -->
+      <div *ngIf="modoFormulario">
+
+        <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 20px;">
+          {{ editando ? '✏️ Editar producto' : '➕ Nuevo producto' }}
+        </h2>
+
+        <!-- Preview imagen -->
+        <div *ngIf="productoActual.imagen_url"
+             style="width:100%; height:180px; border-radius:16px; overflow:hidden; margin-bottom:16px; border:1px solid rgba(212,175,55,0.2);">
+          <img [src]="productoActual.imagen_url"
+               (error)="imagenError($event)"
+               style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div *ngIf="!productoActual.imagen_url"
+             style="width:100%; height:120px; border-radius:16px; border:2px dashed rgba(212,175,55,0.2); display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+          <div style="text-align:center;">
+            <ion-icon name="image-outline" style="font-size:32px; color:rgba(212,175,55,0.3);"></ion-icon>
+            <p style="font-size:12px; color:rgba(255,255,255,0.3); margin:6px 0 0;">Vista previa de imagen</p>
+          </div>
+        </div>
+
+        <!-- URL imagen -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="link-outline" style="font-size:18px; color:#d4af37; margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:14px;"
+                     placeholder="URL de imagen (pega el enlace aquí)"
+                     [(ngModel)]="productoActual.imagen_url">
+          </ion-input>
+        </div>
+
+        <!-- Campos del formulario -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="pricetag-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Nombre del producto *"
+                     [(ngModel)]="productoActual.nombre">
+          </ion-input>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="barcode-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Código *"
+                     [(ngModel)]="productoActual.codigo">
+          </ion-input>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="list-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-select style="--color:rgba(255,255,255,0.7); --placeholder-color:rgba(255,255,255,0.25); --background:transparent; font-size:15px; flex:1; height:48px;"
+                      [(ngModel)]="productoActual.id_categoria"
+                      placeholder="Categoría *"
+                      interface="action-sheet">
+            <ion-select-option *ngFor="let c of categorias" [value]="c.id_categoria">
+              {{ c.nombre }}
+            </ion-select-option>
+          </ion-select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       placeholder="Talla"
+                       [(ngModel)]="productoActual.talla">
+            </ion-input>
+          </div>
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       placeholder="Color"
+                       [(ngModel)]="productoActual.color">
+            </ion-input>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="business-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Marca"
+                     [(ngModel)]="productoActual.marca">
+          </ion-input>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-icon name="arrow-down-outline" style="font-size:16px; color:rgba(239,68,68,0.6); margin-right:8px;"></ion-icon>
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       type="number" placeholder="P. Compra *"
+                       [(ngModel)]="productoActual.precio_compra">
+            </ion-input>
+          </div>
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-icon name="arrow-up-outline" style="font-size:16px; color:rgba(34,197,94,0.6); margin-right:8px;"></ion-icon>
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       type="number" placeholder="P. Venta *"
+                       [(ngModel)]="productoActual.precio_venta">
+            </ion-input>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-icon name="cube-outline" style="font-size:16px; color:rgba(212,175,55,0.5); margin-right:8px;"></ion-icon>
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       type="number" placeholder="Stock actual *"
+                       [(ngModel)]="productoActual.stock_actual">
+            </ion-input>
+          </div>
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 12px;">
+            <ion-icon name="alert-outline" style="font-size:16px; color:rgba(239,68,68,0.5); margin-right:8px;"></ion-icon>
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                       type="number" placeholder="Stock mínimo"
+                       [(ngModel)]="productoActual.stock_minimo">
+            </ion-input>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <button (click)="guardar()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 8px 24px rgba(212,175,55,0.28); margin-bottom:12px;">
+          <ion-icon name="save-outline" style="font-size:18px;"></ion-icon>
+          {{ editando ? 'Actualizar producto' : 'Guardar producto' }}
+        </button>
+
+        <button (click)="cerrarFormulario()"
+                style="width:100%; height:48px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:rgba(255,255,255,0.4); font-size:15px; cursor:pointer;">
+          Cancelar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</ion-content>

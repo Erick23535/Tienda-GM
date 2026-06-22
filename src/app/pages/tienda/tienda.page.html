@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Tienda GM</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Salir
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div style="text-align:center; margin:24px 0;">
+    <h2>Hola, {{ nombre }} 👋</h2>
+    <p style="color:gray;">Bienvenido a Tienda GM</p>
+  </div>
+
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size="6">
+        <ion-card>
+          <ion-card-content style="text-align:center;">
+            <ion-icon name="shirt-outline"
+              style="font-size:40px; color:var(--ion-color-primary);"></ion-icon>
+            <h3>Catálogo</h3>
+            <p style="color:gray; font-size:13px;">Ver productos</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card>
+          <ion-card-content style="text-align:center;">
+            <ion-icon name="receipt-outline"
+              style="font-size:40px; color:var(--ion-color-success);"></ion-icon>
+            <h3>Mis pedidos</h3>
+            <p style="color:gray; font-size:13px;">Ver historial</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card>
+          <ion-card-content style="text-align:center;">
+            <ion-icon name="person-outline"
+              style="font-size:40px; color:var(--ion-color-warning);"></ion-icon>
+            <h3>Mi perfil</h3>
+            <p style="color:gray; font-size:13px;">Ver mis datos</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card>
+          <ion-card-content style="text-align:center;">
+            <ion-icon name="call-outline"
+              style="font-size:40px; color:var(--ion-color-danger);"></ion-icon>
+            <h3>Contacto</h3>
+            <p style="color:gray; font-size:13px;">Comunícate</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

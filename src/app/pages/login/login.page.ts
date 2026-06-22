@@ -6,6 +6,8 @@ import { LoadingController, ToastController } from '@ionic/angular';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+  standalone: false,
 })
 export class LoginPage {
   correo     = '';
@@ -41,7 +43,11 @@ export class LoginPage {
   }
 
   async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
+    const t = await this.toast.create({
+      message: mensaje,
+      duration: 3000,
+      color
+    });
     t.present();
   }
 }

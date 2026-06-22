@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { LoginPageRoutingModule } from './login-routing.module';
-import { LoginPage } from './login.page';
+import { DashboardPageRoutingModule } from './dashboard-routing.module';
+import { DashboardPage } from './dashboard.page';
 
 @NgModule({
   imports: [
@@ -12,8 +12,8 @@ import { LoginPage } from './login.page';
     FormsModule,
     IonicModule,
     RouterModule,
-    LoginPageRoutingModule
+    DashboardPageRoutingModule
   ],
-  declarations: [LoginPage]
+  declarations: [DashboardPage]
 })
-export class LoginPageModule {}
+export class DashboardPageModule {}

@@ -1,0 +1,210 @@
+<ion-content style="--background: #0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 75% 10%, rgba(212,175,55,0.11) 0%, transparent 50%), #0a0a0a; padding:28px 20px 48px; display:flex; flex-direction:column; align-items:center;">
+
+    <div style="width:100%; max-width:420px;">
+
+      <!-- Volver -->
+      <div routerLink="/login-cliente"
+           style="display:inline-flex; align-items:center; justify-content:center;
+                  width:42px; height:42px; background:rgba(255,255,255,0.05);
+                  border:1px solid rgba(212,175,55,0.3); border-radius:12px;
+                  color:#d4af37; font-size:20px; cursor:pointer; margin-bottom:24px;">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </div>
+
+      <!-- Logo -->
+      <div style="text-align:center; margin-bottom:24px;">
+        <div style="width:64px; height:64px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                    border-radius:18px; display:flex; align-items:center; justify-content:center;
+                    margin:0 auto 12px; box-shadow:0 8px 28px rgba(212,175,55,0.28);">
+          <ion-icon name="person-add-outline" style="font-size:30px; color:#0a0a0a;"></ion-icon>
+        </div>
+        <h1 style="font-size:22px; font-weight:800; letter-spacing:4px;
+                   background:linear-gradient(135deg,#d4af37,#f5d76e);
+                   -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">
+          TIENDA GM
+        </h1>
+        <p style="color:rgba(255,255,255,0.3); font-size:13px; margin:6px 0 0;">
+          Crea tu cuenta gratis
+        </p>
+      </div>
+
+      <!-- Card -->
+      <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.12);
+                  border-radius:24px; padding:24px 22px; backdrop-filter:blur(20px);
+                  box-shadow:0 24px 64px rgba(0,0,0,0.45);">
+
+        <!-- Datos personales -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="width:40px; height:40px; background:rgba(255,255,255,0.06);
+                      border:1px solid rgba(255,255,255,0.08); border-radius:12px;
+                      display:flex; align-items:center; justify-content:center;">
+            <ion-icon name="person-outline" style="font-size:18px; color:rgba(255,255,255,0.5);"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Datos personales</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.3); margin:2px 0 0;">Información básica de tu cuenta</p>
+          </div>
+        </div>
+
+        <!-- Nombres -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="person-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Nombres" [(ngModel)]="nombres">
+          </ion-input>
+        </div>
+
+        <!-- Apellidos -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="person-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Apellidos" [(ngModel)]="apellidos">
+          </ion-input>
+        </div>
+
+        <!-- Correo -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="mail-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     type="email" placeholder="Correo electrónico" [(ngModel)]="correo">
+          </ion-input>
+        </div>
+
+        <!-- Divisor -->
+        <div style="height:1px; background:rgba(255,255,255,0.06); margin:20px 0;"></div>
+
+        <!-- Contraseña -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="width:40px; height:40px; background:rgba(255,255,255,0.06);
+                      border:1px solid rgba(255,255,255,0.08); border-radius:12px;
+                      display:flex; align-items:center; justify-content:center;">
+            <ion-icon name="lock-closed-outline" style="font-size:18px; color:rgba(255,255,255,0.5);"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Contraseña</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.3); margin:2px 0 0;">Mínimo 6 caracteres</p>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="lock-closed-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     type="password" placeholder="Contraseña" [(ngModel)]="contrasena">
+          </ion-input>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="lock-open-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     type="password" placeholder="Confirmar contraseña" [(ngModel)]="confirmar">
+          </ion-input>
+        </div>
+
+        <!-- Fortaleza contraseña -->
+        <div *ngIf="contrasena.length > 0"
+             style="display:flex; align-items:center; gap:10px; margin-bottom:8px; padding:0 4px;">
+          <div style="flex:1; display:flex; gap:4px;">
+            <div [style.background]="contrasena.length >= 1 ? (contrasena.length >= 8 ? '#22c55e' : contrasena.length >= 6 ? '#d4af37' : '#ef4444') : 'rgba(255,255,255,0.08)'"
+                 style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
+            <div [style.background]="contrasena.length >= 6 ? (contrasena.length >= 8 ? '#22c55e' : '#d4af37') : 'rgba(255,255,255,0.08)'"
+                 style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
+            <div [style.background]="contrasena.length >= 8 ? '#22c55e' : 'rgba(255,255,255,0.08)'"
+                 style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
+          </div>
+          <span [style.color]="contrasena.length >= 8 ? '#22c55e' : contrasena.length >= 6 ? '#d4af37' : '#ef4444'"
+                style="font-size:12px; font-weight:600; white-space:nowrap;">
+            {{ contrasena.length >= 8 ? '🔒 Segura' : contrasena.length >= 6 ? '⚠️ Aceptable' : '⚠️ Débil' }}
+          </span>
+        </div>
+
+        <!-- Divisor -->
+        <div style="height:1px; background:rgba(255,255,255,0.06); margin:20px 0;"></div>
+
+        <!-- Preguntas de seguridad -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="width:40px; height:40px; background:rgba(212,175,55,0.08);
+                      border:1px solid rgba(212,175,55,0.2); border-radius:12px;
+                      display:flex; align-items:center; justify-content:center;">
+            <ion-icon name="shield-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Preguntas de seguridad</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.3); margin:2px 0 0;">Para recuperar tu contraseña</p>
+          </div>
+        </div>
+
+        <!-- Select pregunta 1 -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="help-circle-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-select style="--color:rgba(255,255,255,0.7); --placeholder-color:rgba(255,255,255,0.22); --background:transparent; font-size:15px; flex:1; height:48px;"
+                      [(ngModel)]="pregunta1" placeholder="Selecciona pregunta 1" interface="action-sheet" cancelText="Cancelar">
+            <ion-select-option *ngFor="let p of preguntasDisponibles" [value]="p">{{ p }}</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div *ngIf="pregunta1"
+             style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="chatbubble-ellipses-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Tu respuesta" [(ngModel)]="respuesta1">
+          </ion-input>
+        </div>
+
+        <!-- Select pregunta 2 -->
+        <div *ngIf="pregunta1 && respuesta1"
+             style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="help-circle-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-select style="--color:rgba(255,255,255,0.7); --placeholder-color:rgba(255,255,255,0.22); --background:transparent; font-size:15px; flex:1; height:48px;"
+                      [(ngModel)]="pregunta2" placeholder="Selecciona pregunta 2" interface="action-sheet" cancelText="Cancelar">
+            <ion-select-option *ngFor="let p of preguntasDisponibles2()" [value]="p">{{ p }}</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div *ngIf="pregunta2"
+             style="display:flex; align-items:center; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.07); border-radius:14px;
+                    padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="chatbubble-ellipses-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px; flex-shrink:0;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.22); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Tu respuesta" [(ngModel)]="respuesta2">
+          </ion-input>
+        </div>
+
+        <!-- Botón crear cuenta -->
+        <button (click)="registrarse()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e);
+                       border:none; border-radius:14px; color:#0a0a0a; font-size:16px;
+                       font-weight:700; cursor:pointer; display:flex; align-items:center;
+                       justify-content:center; gap:8px; margin-top:24px;
+                       box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+          Crear cuenta
+          <ion-icon name="checkmark-circle-outline" style="font-size:18px;"></ion-icon>
+        </button>
+
+        <button routerLink="/login-cliente"
+                style="width:100%; height:44px; background:transparent; border:none;
+                       color:rgba(255,255,255,0.28); font-size:14px; cursor:pointer; margin-top:10px;">
+          ¿Ya tienes cuenta? Inicia sesión
+        </button>
+
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { LoginPageRoutingModule } from './login-routing.module';
-import { LoginPage } from './login.page';
+import { LoginClientePageRoutingModule } from './login-cliente-routing.module';
+import { LoginClientePage } from './login-cliente.page';
 
 @NgModule({
   imports: [
@@ -12,8 +12,8 @@ import { LoginPage } from './login.page';
     FormsModule,
     IonicModule,
     RouterModule,
-    LoginPageRoutingModule
+    LoginClientePageRoutingModule
   ],
-  declarations: [LoginPage]
+  declarations: [LoginClientePage]
 })
-export class LoginPageModule {}
+export class LoginClientePageModule {}
