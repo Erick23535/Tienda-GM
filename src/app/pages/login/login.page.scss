@@ -1,0 +1,238 @@
+ion-content {
+  --background: #0a0a0a;
+}
+
+.login-wrapper {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.10) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+  z-index: 0;
+}
+
+// Círculos decorativos
+.bg-gradient::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  top: -100px;
+  right: -100px;
+}
+
+.bg-gradient::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.08);
+  bottom: -50px;
+  left: -50px;
+}
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 20px;
+}
+
+// Logo
+.logo-area {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo-icon {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+
+  ion-icon {
+    font-size: 36px;
+    color: #0a0a0a;
+  }
+}
+
+.brand-name {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.brand-sub {
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin: 6px 0 0;
+}
+
+// Card
+.login-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 24px;
+  padding: 32px 28px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.card-subtitle {
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  margin: 0 0 28px;
+}
+
+// Inputs
+.input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 4px 16px;
+  margin-bottom: 14px;
+  transition: border-color 0.3s;
+
+  &:focus-within {
+    border-color: rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.05);
+  }
+}
+
+.input-icon {
+  ion-icon {
+    font-size: 18px;
+    color: rgba(212, 175, 55, 0.6);
+    margin-right: 12px;
+  }
+}
+
+.custom-input {
+  --color: #ffffff;
+  --placeholder-color: rgba(255,255,255,0.3);
+  --background: transparent;
+  font-size: 15px;
+  flex: 1;
+  height: 48px;
+}
+
+// Botón principal
+.btn-login {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  border: none;
+  border-radius: 14px;
+  color: #0a0a0a;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s;
+
+  ion-icon { font-size: 18px; }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+  }
+}
+
+// Divisor
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0 16px;
+  gap: 12px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  span {
+    color: rgba(255,255,255,0.3);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+// Botón outline
+.btn-outline {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 14px;
+  color: #d4af37;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+
+  ion-icon { font-size: 18px; }
+
+  &:active {
+    background: rgba(212, 175, 55, 0.08);
+  }
+}
+
+// Botón ghost
+.btn-ghost {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s;
+
+  &:active { color: rgba(255,255,255,0.6); }
+}

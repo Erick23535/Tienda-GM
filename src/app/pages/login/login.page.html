@@ -1,0 +1,75 @@
+<ion-content>
+  <div class="login-wrapper">
+
+    <!-- Fondo con degradado -->
+    <div class="bg-gradient"></div>
+
+    <div class="login-container">
+
+      <!-- Logo -->
+      <div class="logo-area">
+        <div class="logo-icon">
+          <ion-icon name="shirt-outline"></ion-icon>
+        </div>
+        <h1 class="brand-name">TIENDA GM</h1>
+        <p class="brand-sub">Panel de Administración</p>
+      </div>
+
+      <!-- Card -->
+      <div class="login-card">
+
+        <h2 class="card-title">Bienvenido</h2>
+        <p class="card-subtitle">Ingresa tus credenciales para continuar</p>
+
+        <!-- Campo correo -->
+        <div class="input-group">
+          <div class="input-icon">
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+          <ion-input
+            class="custom-input"
+            type="email"
+            placeholder="Correo electrónico"
+            [(ngModel)]="correo"
+            autocomplete="email">
+          </ion-input>
+        </div>
+
+        <!-- Campo contraseña -->
+        <div class="input-group">
+          <div class="input-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <ion-input
+            class="custom-input"
+            type="password"
+            placeholder="Contraseña"
+            [(ngModel)]="contrasena">
+          </ion-input>
+        </div>
+
+        <!-- Botón login -->
+        <button class="btn-login" (click)="iniciarSesion()">
+          <span>Ingresar</span>
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+
+        <!-- Divisor -->
+        <div class="divider">
+          <span>¿Eres cliente?</span>
+        </div>
+
+        <!-- Botones cliente -->
+        <button class="btn-outline" routerLink="/login-cliente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Ingresar como Cliente</span>
+        </button>
+
+        <button class="btn-ghost" routerLink="/registro-cliente">
+          <span>Crear cuenta nueva</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</ion-content>

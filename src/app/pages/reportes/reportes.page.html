@@ -1,0 +1,303 @@
+<ion-content style="--background:#0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
+
+    <!-- Header -->
+    <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; gap:12px;">
+      <div routerLink="/dashboard"
+           style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+      </div>
+      <div>
+        <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; letter-spacing:1px; text-transform:uppercase;">Análisis</p>
+        <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Reportes</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex; background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.06); padding:0 8px; overflow-x:auto;">
+      <div (click)="cambiarSeccion('resumen')"
+           [style.border-bottom]="seccion === 'resumen' ? '2px solid #d4af37' : '2px solid transparent'"
+           [style.color]="seccion === 'resumen' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+           style="flex:1; text-align:center; padding:14px 8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">
+        <ion-icon name="grid-outline" style="vertical-align:middle; margin-right:4px;"></ion-icon>
+        Resumen
+      </div>
+      <div (click)="cambiarSeccion('ventas-dia')"
+           [style.border-bottom]="seccion === 'ventas-dia' ? '2px solid #d4af37' : '2px solid transparent'"
+           [style.color]="seccion === 'ventas-dia' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+           style="flex:1; text-align:center; padding:14px 8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">
+        <ion-icon name="today-outline" style="vertical-align:middle; margin-right:4px;"></ion-icon>
+        Hoy
+      </div>
+      <div (click)="cambiarSeccion('stock-bajo')"
+           [style.border-bottom]="seccion === 'stock-bajo' ? '2px solid #d4af37' : '2px solid transparent'"
+           [style.color]="seccion === 'stock-bajo' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+           style="flex:1; text-align:center; padding:14px 8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">
+        <ion-icon name="warning-outline" style="vertical-align:middle; margin-right:4px;"></ion-icon>
+        Stock
+      </div>
+      <div (click)="cambiarSeccion('mas-vendidos')"
+           [style.border-bottom]="seccion === 'mas-vendidos' ? '2px solid #d4af37' : '2px solid transparent'"
+           [style.color]="seccion === 'mas-vendidos' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+           style="flex:1; text-align:center; padding:14px 8px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">
+        <ion-icon name="trophy-outline" style="vertical-align:middle; margin-right:4px;"></ion-icon>
+        Top
+      </div>
+    </div>
+
+    <div style="padding:16px 16px 40px;">
+
+      <!-- ===== RESUMEN ===== -->
+      <div *ngIf="seccion === 'resumen'">
+
+        <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 16px;">
+          Resumen general
+        </p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+
+          <div style="background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05)); border:1px solid rgba(212,175,55,0.25); border-radius:20px; padding:20px 16px;">
+            <div style="width:36px; height:36px; background:rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
+              <ion-icon name="cart-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+            </div>
+            <p style="font-size:30px; font-weight:800; color:#d4af37; margin:0 0 4px;">{{ resumen.ventas_hoy || 0 }}</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Ventas hoy</p>
+          </div>
+
+          <div style="background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.04)); border:1px solid rgba(34,197,94,0.2); border-radius:20px; padding:20px 16px;">
+            <div style="width:36px; height:36px; background:rgba(34,197,94,0.15); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
+              <ion-icon name="cash-outline" style="font-size:18px; color:#22c55e;"></ion-icon>
+            </div>
+            <p style="font-size:30px; font-weight:800; color:#22c55e; margin:0 0 4px;">${{ resumen.ingresos_hoy || 0 }}</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Ingresos hoy</p>
+          </div>
+
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px;">
+
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(168,139,250,0.2); border-radius:16px; padding:16px 12px; text-align:center;">
+            <ion-icon name="trending-up-outline" style="font-size:22px; color:#a78bfa; margin-bottom:8px; display:block;"></ion-icon>
+            <p style="font-size:15px; font-weight:800; color:#fff; margin:0 0 2px;">${{ resumen.ingresos_mes || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Este mes</p>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(239,68,68,0.2); border-radius:16px; padding:16px 12px; text-align:center;">
+            <ion-icon name="warning-outline" style="font-size:22px; color:#ef4444; margin-bottom:8px; display:block;"></ion-icon>
+            <p style="font-size:15px; font-weight:800; color:#ef4444; margin:0 0 2px;">{{ resumen.stock_bajo || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Stock bajo</p>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(56,189,248,0.2); border-radius:16px; padding:16px 12px; text-align:center;">
+            <ion-icon name="people-outline" style="font-size:22px; color:#38bdf8; margin-bottom:8px; display:block;"></ion-icon>
+            <p style="font-size:15px; font-weight:800; color:#fff; margin:0 0 2px;">{{ resumen.total_clientes || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Clientes</p>
+          </div>
+
+        </div>
+
+        <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 12px;">
+          Acceso rápido
+        </p>
+
+        <div (click)="cambiarSeccion('ventas-dia')"
+             style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;">
+          <div style="width:40px; height:40px; background:rgba(212,175,55,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon name="today-outline" style="font-size:20px; color:#d4af37;"></ion-icon>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Ventas del día</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Ver detalle de ventas de hoy</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" style="font-size:16px; color:rgba(255,255,255,0.2);"></ion-icon>
+        </div>
+
+        <div (click)="cambiarSeccion('stock-bajo')"
+             style="display:flex; align-items:center; gap:14px; background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.15); border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;">
+          <div style="width:40px; height:40px; background:rgba(239,68,68,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon name="warning-outline" style="font-size:20px; color:#ef4444;"></ion-icon>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Stock bajo</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">{{ resumen.stock_bajo || 0 }} productos necesitan reposición</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" style="font-size:16px; color:rgba(255,255,255,0.2);"></ion-icon>
+        </div>
+
+        <div (click)="cambiarSeccion('mas-vendidos')"
+             style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:14px 16px; cursor:pointer;">
+          <div style="width:40px; height:40px; background:rgba(212,175,55,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon name="trophy-outline" style="font-size:20px; color:#d4af37;"></ion-icon>
+          </div>
+          <div style="flex:1;">
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Más vendidos</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Top 10 productos con más ventas</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" style="font-size:16px; color:rgba(255,255,255,0.2);"></ion-icon>
+        </div>
+
+      </div>
+
+      <!-- ===== VENTAS DEL DÍA ===== -->
+      <div *ngIf="seccion === 'ventas-dia'">
+
+        <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 16px;">
+          Ventas de hoy
+        </p>
+
+        <div *ngIf="ventasDia.length === 0" style="text-align:center; padding:48px 20px;">
+          <ion-icon name="receipt-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+          <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">No hay ventas registradas hoy.</p>
+        </div>
+
+        <!-- Total del día — USA totalDia en lugar de reduce en el template -->
+        <div *ngIf="ventasDia.length > 0"
+             style="background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.04)); border:1px solid rgba(34,197,94,0.2); border-radius:20px; padding:20px; margin-bottom:16px;">
+          <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 4px; letter-spacing:1px; text-transform:uppercase;">Total recaudado hoy</p>
+          <p style="font-size:32px; font-weight:800; color:#22c55e; margin:0;">
+            ${{ totalDia | number:'1.2-2' }}
+          </p>
+          <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:8px 0 0;">{{ ventasDia.length }} ventas completadas</p>
+        </div>
+
+        <div *ngFor="let v of ventasDia"
+             style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:16px; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <span style="font-size:15px; font-weight:700; color:#fff;">Venta #{{ v.id_venta }}</span>
+                <div [style.background]="v.estado === 'completada' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'"
+                     [style.border]="v.estado === 'completada' ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(239,68,68,0.3)'"
+                     style="border-radius:6px; padding:2px 8px;">
+                  <span [style.color]="v.estado === 'completada' ? '#22c55e' : '#ef4444'"
+                        style="font-size:11px; font-weight:700;">
+                    {{ v.estado === 'completada' ? '✓' : '✗' }} {{ v.estado }}
+                  </span>
+                </div>
+              </div>
+              <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 2px;">{{ v.cliente || 'Sin cliente' }}</p>
+              <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 2px;">Vendedor: {{ v.vendedor }}</p>
+              <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,0.06); border-radius:6px; padding:2px 8px; margin-top:4px;">
+                <ion-icon name="card-outline" style="font-size:12px; color:rgba(255,255,255,0.4);"></ion-icon>
+                <span style="font-size:11px; color:rgba(255,255,255,0.4);">{{ v.metodo_pago }}</span>
+              </div>
+            </div>
+            <p style="font-size:22px; font-weight:800; color:#22c55e; margin:0;">${{ v.total }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ===== STOCK BAJO ===== -->
+      <div *ngIf="seccion === 'stock-bajo'">
+
+        <div *ngIf="stockBajo.length === 0" style="text-align:center; padding:48px 20px;">
+          <div style="width:72px; height:72px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.2); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <ion-icon name="checkmark-circle-outline" style="font-size:36px; color:#22c55e;"></ion-icon>
+          </div>
+          <p style="font-size:16px; font-weight:700; color:#22c55e; margin:0 0 6px;">¡Todo en orden!</p>
+          <p style="color:rgba(255,255,255,0.3); font-size:14px; margin:0;">Todos los productos tienen stock suficiente.</p>
+        </div>
+
+        <div *ngIf="stockBajo.length > 0"
+             style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:16px; padding:16px; margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; background:rgba(239,68,68,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon name="warning-outline" style="font-size:22px; color:#ef4444;"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:15px; font-weight:700; color:#ef4444; margin:0 0 2px;">
+              {{ stockBajo.length }} producto{{ stockBajo.length > 1 ? 's' : '' }} con stock bajo
+            </p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Estos productos necesitan reposición urgente</p>
+          </div>
+        </div>
+
+        <div *ngFor="let p of stockBajo; let i = index"
+             style="background:rgba(255,255,255,0.04); border:1px solid rgba(239,68,68,0.15); border-radius:18px; padding:16px; margin-bottom:10px;">
+
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:32px; height:32px; background:rgba(239,68,68,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <span style="font-size:13px; font-weight:700; color:#ef4444;">{{ i + 1 }}</span>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.nombre }}</p>
+              <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 2px;">{{ p.categoria }} · {{ p.codigo }}</p>
+              <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Talla: {{ p.talla || '-' }} · {{ p.color || '-' }}</p>
+            </div>
+            <div style="text-align:center; flex-shrink:0;">
+              <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:8px 12px; margin-bottom:4px;">
+                <p style="font-size:24px; font-weight:800; color:#ef4444; margin:0; line-height:1;">{{ p.stock_actual }}</p>
+                <p style="font-size:10px; color:rgba(239,68,68,0.7); margin:0;">actual</p>
+              </div>
+              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Mín: {{ p.stock_minimo }}</p>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span style="font-size:11px; color:rgba(255,255,255,0.35);">Nivel de stock</span>
+              <span style="font-size:11px; color:#ef4444; font-weight:600;">{{ p.stock_actual }}/{{ p.stock_minimo }} mín.</span>
+            </div>
+            <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+              <div [style.width]="(p.stock_actual / p.stock_minimo * 100 > 100 ? 100 : p.stock_actual / p.stock_minimo * 100) + '%'"
+                   [style.background]="p.stock_actual === 0 ? '#ef4444' : '#f97316'"
+                   style="height:100%; border-radius:3px;">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ===== MÁS VENDIDOS ===== -->
+      <div *ngIf="seccion === 'mas-vendidos'">
+
+        <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 16px;">
+          Top 10 productos más vendidos
+        </p>
+
+        <div *ngIf="masVendidos.length === 0" style="text-align:center; padding:48px 20px;">
+          <ion-icon name="trophy-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+          <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">Aún no hay ventas registradas.</p>
+        </div>
+
+        <div *ngIf="masVendidos.length > 0" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;">
+          <div *ngFor="let p of masVendidos.slice(0,3); let i = index"
+               [style.background]="i === 0 ? 'linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.08))' : i === 1 ? 'linear-gradient(135deg,rgba(148,163,184,0.15),rgba(148,163,184,0.05))' : 'linear-gradient(135deg,rgba(180,120,60,0.15),rgba(180,120,60,0.05))'"
+               [style.border]="i === 0 ? '1px solid rgba(212,175,55,0.3)' : i === 1 ? '1px solid rgba(148,163,184,0.2)' : '1px solid rgba(180,120,60,0.2)'"
+               style="border-radius:16px; padding:14px 10px; text-align:center;">
+            <div style="font-size:24px; margin-bottom:6px;">{{ i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉' }}</div>
+            <p style="font-size:12px; font-weight:700; color:#fff; margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.nombre }}</p>
+            <p [style.color]="i === 0 ? '#d4af37' : i === 1 ? '#94a3b8' : '#b4783c'"
+               style="font-size:16px; font-weight:800; margin:0 0 2px;">{{ p.total_vendido }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">unidades</p>
+          </div>
+        </div>
+
+        <div *ngFor="let p of masVendidos; let i = index"
+             style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:14px; margin-bottom:8px;">
+          <div [style.background]="i === 0 ? 'rgba(212,175,55,0.2)' : i === 1 ? 'rgba(148,163,184,0.15)' : i === 2 ? 'rgba(180,120,60,0.15)' : 'rgba(255,255,255,0.05)'"
+               [style.border]="i === 0 ? '1px solid rgba(212,175,55,0.3)' : 'none'"
+               style="width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span [style.color]="i === 0 ? '#d4af37' : i === 1 ? '#94a3b8' : i === 2 ? '#b4783c' : 'rgba(255,255,255,0.35)'"
+                  style="font-size:14px; font-weight:800;">#{{ i + 1 }}</span>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.nombre }}</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">{{ p.codigo }} · Talla: {{ p.talla || '-' }}</p>
+          </div>
+          <div style="text-align:right; flex-shrink:0;">
+            <p style="font-size:16px; font-weight:800; color:#22c55e; margin:0 0 2px;">${{ p.total_ingresos }}</p>
+            <div style="display:inline-flex; align-items:center; gap:4px; background:rgba(212,175,55,0.1); border-radius:6px; padding:2px 6px;">
+              <ion-icon name="cube-outline" style="font-size:11px; color:#d4af37;"></ion-icon>
+              <span style="font-size:11px; color:#d4af37; font-weight:600;">{{ p.total_vendido }} uds</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</ion-content>

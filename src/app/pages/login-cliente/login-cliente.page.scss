@@ -1,0 +1,224 @@
+ion-content {
+  --background: #0a0a0a;
+}
+
+.login-wrapper {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 10%, rgba(212, 175, 55, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+  z-index: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 175, 55, 0.08);
+    top: -80px;
+    left: -80px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 175, 55, 0.06);
+    bottom: -40px;
+    right: -40px;
+  }
+}
+
+.login-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 20px;
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.logo-icon {
+  width: 68px;
+  height: 68px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 28px rgba(212, 175, 55, 0.25);
+
+  ion-icon {
+    font-size: 32px;
+    color: #0a0a0a;
+  }
+}
+
+.brand-name {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.brand-sub {
+  color: rgba(255,255,255,0.35);
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+
+.login-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 24px;
+  padding: 28px 24px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.card-subtitle {
+  color: rgba(255,255,255,0.35);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 4px 16px;
+  margin-bottom: 12px;
+  transition: border-color 0.3s;
+
+  &:focus-within {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.04);
+  }
+}
+
+.input-icon ion-icon {
+  font-size: 18px;
+  color: rgba(212, 175, 55, 0.5);
+  margin-right: 12px;
+}
+
+.custom-input {
+  --color: #ffffff;
+  --placeholder-color: rgba(255,255,255,0.25);
+  --background: transparent;
+  font-size: 15px;
+  flex: 1;
+  height: 48px;
+}
+
+.forgot-link {
+  text-align: right;
+  color: #d4af37;
+  font-size: 13px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.btn-login {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, #d4af37, #f5d76e);
+  border: none;
+  border-radius: 14px;
+  color: #0a0a0a;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+  transition: all 0.3s;
+
+  ion-icon { font-size: 18px; }
+  &:active { transform: scale(0.98); }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0 16px;
+  gap: 12px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  span {
+    color: rgba(255,255,255,0.28);
+    font-size: 13px;
+  }
+}
+
+.btn-outline {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 14px;
+  color: #d4af37;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+
+  ion-icon { font-size: 18px; }
+  &:active { background: rgba(212, 175, 55, 0.06); }
+}
+
+.btn-ghost {
+  width: 100%;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  font-size: 13px;
+  cursor: pointer;
+  &:active { color: rgba(255,255,255,0.5); }
+}
