@@ -1,0 +1,236 @@
+<ion-content style="--background:#0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
+
+    <!-- ===== DETALLE CLIENTE ===== -->
+    <div *ngIf="clienteDetalle"
+         style="position:fixed; inset:0; z-index:999; background:#0a0a0a; display:flex; flex-direction:column; overflow-y:auto;">
+
+      <!-- Header detalle -->
+      <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; gap:12px;">
+        <div (click)="cerrarDetalle()"
+             style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+        </div>
+        <div>
+          <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; text-transform:uppercase; letter-spacing:1px;">Detalle</p>
+          <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Perfil del cliente</p>
+        </div>
+      </div>
+
+      <div style="padding:20px;">
+
+        <!-- Avatar y nombre -->
+        <div style="text-align:center; padding:20px 0;">
+          <div style="width:72px; height:72px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 8px 24px rgba(212,175,55,0.3);">
+            <span style="font-size:28px; font-weight:800; color:#0a0a0a;">
+              {{ clienteDetalle.nombres?.charAt(0) }}{{ clienteDetalle.apellidos?.charAt(0) }}
+            </span>
+          </div>
+          <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 4px;">
+            {{ clienteDetalle.nombres }} {{ clienteDetalle.apellidos }}
+          </h2>
+          <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px;"
+               [style.background]="clienteDetalle.activo ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'"
+               [style.border]="clienteDetalle.activo ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(239,68,68,0.3)'">
+            <div [style.background]="clienteDetalle.activo ? '#22c55e' : '#ef4444'"
+                 style="width:6px; height:6px; border-radius:50%;"></div>
+            <span [style.color]="clienteDetalle.activo ? '#22c55e' : '#ef4444'"
+                  style="font-size:12px; font-weight:600;">
+              {{ clienteDetalle.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Stats del cliente -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+          <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:16px; padding:16px; text-align:center;">
+            <p style="font-size:24px; font-weight:800; color:#d4af37; margin:0 0 4px;">{{ clienteDetalle.total_compras || 0 }}</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Compras realizadas</p>
+          </div>
+          <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:16px; padding:16px; text-align:center;">
+            <p style="font-size:24px; font-weight:800; color:#22c55e; margin:0 0 4px;">${{ clienteDetalle.total_gastado || 0 }}</p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Total gastado</p>
+          </div>
+        </div>
+
+        <!-- Info de contacto -->
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; margin-bottom:16px;">
+
+          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="width:36px; height:36px; background:rgba(56,189,248,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <ion-icon name="mail-outline" style="font-size:16px; color:#38bdf8;"></ion-icon>
+            </div>
+            <div>
+              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Correo</p>
+              <p style="font-size:14px; color:#fff; margin:0;">{{ clienteDetalle.correo }}</p>
+            </div>
+            <div *ngIf="clienteDetalle.correo_verificado"
+                 style="margin-left:auto; background:rgba(34,197,94,0.1); border-radius:6px; padding:2px 8px;">
+              <span style="font-size:10px; color:#22c55e; font-weight:600;">✓ Verificado</span>
+            </div>
+          </div>
+
+          <div *ngIf="clienteDetalle.telefono"
+               style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="width:36px; height:36px; background:rgba(212,175,55,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <ion-icon name="call-outline" style="font-size:16px; color:#d4af37;"></ion-icon>
+            </div>
+            <div>
+              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Teléfono</p>
+              <p style="font-size:14px; color:#fff; margin:0;">{{ clienteDetalle.telefono }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="clienteDetalle.cedula"
+               style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="width:36px; height:36px; background:rgba(168,139,250,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <ion-icon name="card-outline" style="font-size:16px; color:#a78bfa;"></ion-icon>
+            </div>
+            <div>
+              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Cédula</p>
+              <p style="font-size:14px; color:#fff; margin:0;">{{ clienteDetalle.cedula }}</p>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px;">
+            <div style="width:36px; height:36px; background:rgba(255,255,255,0.05); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <ion-icon name="calendar-outline" style="font-size:16px; color:rgba(255,255,255,0.4);"></ion-icon>
+            </div>
+            <div>
+              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Registrado</p>
+              <p style="font-size:14px; color:#fff; margin:0;">{{ clienteDetalle.fecha_registro | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Acciones -->
+        <button (click)="toggleActivo(clienteDetalle)"
+                [style.background]="clienteDetalle.activo ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)'"
+                [style.border]="clienteDetalle.activo ? '1px solid rgba(239,68,68,0.2)' : '1px solid rgba(34,197,94,0.2)'"
+                [style.color]="clienteDetalle.activo ? '#ef4444' : '#22c55e'"
+                style="width:100%; height:50px; border-radius:14px; font-size:15px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px;">
+          <ion-icon [name]="clienteDetalle.activo ? 'ban-outline' : 'checkmark-circle-outline'" style="font-size:18px;"></ion-icon>
+          {{ clienteDetalle.activo ? 'Desactivar cuenta' : 'Activar cuenta' }}
+        </button>
+
+        <button (click)="confirmarEliminar(clienteDetalle)"
+                style="width:100%; height:50px; background:transparent; border:1px solid rgba(239,68,68,0.15); border-radius:14px; color:rgba(239,68,68,0.5); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <ion-icon name="trash-outline" style="font-size:16px;"></ion-icon>
+          Eliminar cliente
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ===== LISTA CLIENTES ===== -->
+    <div *ngIf="!clienteDetalle">
+
+      <!-- Header -->
+      <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; gap:12px;">
+        <div routerLink="/dashboard"
+             style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+        </div>
+        <div>
+          <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; text-transform:uppercase; letter-spacing:1px;">Administración</p>
+          <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Clientes</p>
+        </div>
+      </div>
+
+      <div style="padding:16px 16px 40px;">
+
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:20px;">
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:14px; text-align:center;">
+            <p style="font-size:22px; font-weight:800; color:#fff; margin:0 0 2px;">{{ stats.total || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Total</p>
+          </div>
+          <div style="background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.15); border-radius:16px; padding:14px; text-align:center;">
+            <p style="font-size:22px; font-weight:800; color:#22c55e; margin:0 0 2px;">{{ stats.activos || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Activos</p>
+          </div>
+          <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:16px; padding:14px; text-align:center;">
+            <p style="font-size:22px; font-weight:800; color:#ef4444; margin:0 0 2px;">{{ stats.inactivos || 0 }}</p>
+            <p style="font-size:10px; color:rgba(255,255,255,0.35); margin:0;">Inactivos</p>
+          </div>
+        </div>
+
+        <!-- Buscador -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:4px 16px; margin-bottom:16px;">
+          <ion-icon name="search-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:10px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:44px; font-size:15px;"
+                     placeholder="Buscar por nombre, correo..."
+                     [(ngModel)]="busqueda"
+                     (ionChange)="buscar()">
+          </ion-input>
+          <div *ngIf="busqueda" (click)="limpiarBusqueda()"
+               style="cursor:pointer; padding:4px;">
+            <ion-icon name="close-outline" style="font-size:18px; color:rgba(255,255,255,0.4);"></ion-icon>
+          </div>
+        </div>
+
+        <!-- Contador -->
+        <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 14px;">
+          {{ clientes.length }} clientes encontrados
+        </p>
+
+        <!-- Lista vacía -->
+        <div *ngIf="clientes.length === 0"
+             style="text-align:center; padding:48px 20px;">
+          <ion-icon name="people-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+          <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">No se encontraron clientes.</p>
+        </div>
+
+        <!-- Tarjetas clientes -->
+        <div *ngFor="let c of clientes"
+             (click)="verDetalle(c)"
+             style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:14px 16px; margin-bottom:10px; cursor:pointer;">
+
+          <!-- Avatar inicial -->
+          <div [style.background]="c.activo ? 'linear-gradient(135deg,#d4af37,#f5d76e)' : 'rgba(255,255,255,0.08)'"
+               style="width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span [style.color]="c.activo ? '#0a0a0a' : 'rgba(255,255,255,0.3)'"
+                  style="font-size:16px; font-weight:800;">
+              {{ c.nombres?.charAt(0) }}{{ c.apellidos?.charAt(0) }}
+            </span>
+          </div>
+
+          <!-- Info -->
+          <div style="flex:1; min-width:0;">
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              {{ c.nombres }} {{ c.apellidos }}
+            </p>
+            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              {{ c.correo }}
+            </p>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <div [style.background]="c.activo ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'"
+                   [style.border]="c.activo ? '1px solid rgba(34,197,94,0.25)' : '1px solid rgba(239,68,68,0.25)'"
+                   style="border-radius:6px; padding:1px 7px;">
+                <span [style.color]="c.activo ? '#22c55e' : '#ef4444'"
+                      style="font-size:10px; font-weight:600;">
+                  {{ c.activo ? '● Activo' : '● Inactivo' }}
+                </span>
+              </div>
+              <div *ngIf="c.correo_verificado"
+                   style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.2); border-radius:6px; padding:1px 7px;">
+                <span style="font-size:10px; color:#38bdf8; font-weight:600;">✓ Verificado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fecha y chevron -->
+          <div style="text-align:right; flex-shrink:0;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.25); margin:0 0 4px;">
+              {{ c.fecha_registro | date:'dd/MM/yy' }}
+            </p>
+            <ion-icon name="chevron-forward-outline" style="font-size:16px; color:rgba(255,255,255,0.2);"></ion-icon>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ion-content>
