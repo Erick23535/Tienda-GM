@@ -14,6 +14,7 @@ require_once __DIR__ . '/controllers/ProductoController.php';
 require_once __DIR__ . '/controllers/ClienteController.php';
 require_once __DIR__ . '/controllers/ReporteController.php';
 require_once __DIR__ . '/controllers/VentaController.php';
+require_once __DIR__ . '/controllers/ClienteAdminController.php';
 
 $uri    = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $partes = explode('/', str_replace('tienda-gm-api/', '', $uri));
@@ -73,6 +74,20 @@ if ($recurso === 'ventas') {
     if (is_numeric($partes[1] ?? '') && ($partes[2] ?? '') === 'anular') {
         if ($metodo === 'PUT') $controller->anular($partes[1]);
     }
+}
+
+
+// Rutas admin clientes
+if ($recurso === 'admin' && $accion === 'clientes') {
+    $controller = new ClienteAdminController();
+    $subaccion  = $partes[2] ?? '';
+    $subid      = $partes[3] ?? '';
+
+    if (!$subaccion && $metodo === 'GET')  $controller->listar();
+    if ($subaccion === 'stats' && $metodo === 'GET') $controller->stats();
+    if (is_numeric($subaccion) && $metodo === 'GET') $controller->obtener($subaccion);
+    if (is_numeric($subaccion) && $subid === 'activar' && $metodo === 'PUT') $controller->toggleActivo($subaccion);
+    if (is_numeric($subaccion) && $metodo === 'DELETE') $controller->eliminar($subaccion);
 }
 
 http_response_code(404);
