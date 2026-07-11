@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { TiendaPageRoutingModule } from './tienda-routing.module';
-import { TiendaPage } from './tienda.page';
+import { ClientesAdminPageRoutingModule } from './clientes-admin-routing.module';
+import { ClientesAdminPage } from './clientes-admin.page';
 
 @NgModule({
   imports: [
@@ -12,8 +12,8 @@ import { TiendaPage } from './tienda.page';
     FormsModule,
     IonicModule,
     RouterModule,
-    TiendaPageRoutingModule
+    ClientesAdminPageRoutingModule
   ],
-  declarations: [TiendaPage]
+  declarations: [ClientesAdminPage]
 })
-export class TiendaPageModule {}
+export class ClientesAdminPageModule {}
