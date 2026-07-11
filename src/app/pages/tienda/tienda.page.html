@@ -1,70 +1,409 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Tienda GM</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrarSesion()">
-        <ion-icon name="log-out-outline"></ion-icon>
-        Salir
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content style="--background:#0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
 
-<ion-content class="ion-padding">
+    <!-- ===== MODAL PRODUCTO ===== -->
+    <div *ngIf="productoVista"
+         style="position:fixed; inset:0; z-index:999; display:flex; flex-direction:column; background:#0a0a0a;">
 
-  <div style="text-align:center; margin:24px 0;">
-    <h2>Hola, {{ nombre }} 👋</h2>
-    <p style="color:gray;">Bienvenido a Tienda GM</p>
+      <div style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+        <div (click)="cerrarModal()"
+             style="width:40px; height:40px; background:rgba(255,255,255,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="arrow-back-outline" style="font-size:20px; color:#fff;"></ion-icon>
+        </div>
+        <span style="font-size:14px; font-weight:600; color:rgba(255,255,255,0.5);">Detalle del producto</span>
+        <div style="width:40px;"></div>
+      </div>
+
+      <!-- Imagen modal -->
+      <div style="width:100%; height:350px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
+        <img *ngIf="productoVista.imagen_url"
+             [src]="productoVista.imagen_url"
+             style="width:100%; height:100%; object-fit:contain;"
+             (error)="$event.target.style.display='none'">
+        <ion-icon *ngIf="!productoVista.imagen_url" name="shirt-outline"
+                  style="font-size:80px; color:rgba(212,175,55,0.2);"></ion-icon>
+      </div>
+
+      <div style="flex:1; padding:24px 20px; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div style="flex:1;">
+            <h2 style="font-size:22px; font-weight:800; color:#fff; margin:0 0 4px;">{{ productoVista.nombre }}</h2>
+            <p style="font-size:14px; color:rgba(212,175,55,0.7); margin:0;">{{ productoVista.categoria }}</p>
+          </div>
+          <span style="font-size:26px; font-weight:800; color:#d4af37;">${{ productoVista.precio_venta }}</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+          <div *ngIf="productoVista.talla"
+               style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Talla</p>
+            <p style="font-size:15px; font-weight:700; color:#fff; margin:0;">{{ productoVista.talla }}</p>
+          </div>
+          <div *ngIf="productoVista.color"
+               style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Color</p>
+            <p style="font-size:15px; font-weight:700; color:#fff; margin:0;">{{ productoVista.color }}</p>
+          </div>
+          <div *ngIf="productoVista.marca"
+               style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Marca</p>
+            <p style="font-size:15px; font-weight:700; color:#fff; margin:0;">{{ productoVista.marca }}</p>
+          </div>
+          <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:12px; padding:12px;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Stock</p>
+            <p style="font-size:15px; font-weight:700; color:#22c55e; margin:0;">{{ productoVista.stock_actual }} disponibles</p>
+          </div>
+        </div>
+
+        <button (click)="agregarDesdeModal()"
+                style="width:100%; height:54px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:17px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 8px 24px rgba(212,175,55,0.3); margin-bottom:12px;">
+          <ion-icon name="cart-outline" style="font-size:20px;"></ion-icon>
+          Agregar al carrito
+        </button>
+
+        <button (click)="cerrarModal()"
+                style="width:100%; height:44px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:rgba(255,255,255,0.4); font-size:14px; cursor:pointer;">
+          Seguir viendo productos
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div *ngIf="!productoVista">
+
+      <!-- Header -->
+      <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:10px; display:flex; align-items:center; justify-content:center;">
+            <ion-icon name="shirt-outline" style="font-size:18px; color:#0a0a0a;"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; letter-spacing:1px;">TIENDA GM</p>
+            <p style="font-size:14px; font-weight:700; color:#fff; margin:0;">Hola, {{ nombre.split(' ')[0] }} 👋</p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div (click)="seccion = 'carrito'"
+               style="position:relative; width:40px; height:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="cart-outline" style="font-size:20px; color:#d4af37;"></ion-icon>
+            <div *ngIf="cantidadCarrito > 0"
+                 style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:10px; font-weight:700; color:#fff;">{{ cantidadCarrito }}</span>
+            </div>
+          </div>
+          <div (click)="cerrarSesion()"
+               style="width:40px; height:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="log-out-outline" style="font-size:18px; color:rgba(255,255,255,0.4);"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav tabs -->
+      <div style="display:flex; background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.06); padding:0 8px;">
+        <div (click)="seccion = 'inicio'"
+             [style.border-bottom]="seccion === 'inicio' ? '2px solid #d4af37' : '2px solid transparent'"
+             [style.color]="seccion === 'inicio' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+             style="flex:1; text-align:center; padding:12px 0; font-size:12px; font-weight:600; cursor:pointer;">
+          <ion-icon name="home-outline" style="display:block; font-size:20px; margin:0 auto 2px;"></ion-icon>
+          Inicio
+        </div>
+        <div (click)="seccion = 'catalogo'"
+             [style.border-bottom]="seccion === 'catalogo' ? '2px solid #d4af37' : '2px solid transparent'"
+             [style.color]="seccion === 'catalogo' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+             style="flex:1; text-align:center; padding:12px 0; font-size:12px; font-weight:600; cursor:pointer;">
+          <ion-icon name="shirt-outline" style="display:block; font-size:20px; margin:0 auto 2px;"></ion-icon>
+          Catálogo
+        </div>
+        <div (click)="seccion = 'carrito'"
+             [style.border-bottom]="seccion === 'carrito' ? '2px solid #d4af37' : '2px solid transparent'"
+             [style.color]="seccion === 'carrito' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+             style="flex:1; text-align:center; padding:12px 0; font-size:12px; font-weight:600; cursor:pointer; position:relative;">
+          <ion-icon name="cart-outline" style="display:block; font-size:20px; margin:0 auto 2px;"></ion-icon>
+          Carrito
+          <div *ngIf="cantidadCarrito > 0"
+               style="position:absolute; top:8px; right:16px; width:16px; height:16px; background:#ef4444; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:9px; font-weight:700; color:#fff;">{{ cantidadCarrito }}</span>
+          </div>
+        </div>
+        <div (click)="seccion = 'perfil'"
+             [style.border-bottom]="seccion === 'perfil' ? '2px solid #d4af37' : '2px solid transparent'"
+             [style.color]="seccion === 'perfil' ? '#d4af37' : 'rgba(255,255,255,0.4)'"
+             style="flex:1; text-align:center; padding:12px 0; font-size:12px; font-weight:600; cursor:pointer;">
+          <ion-icon name="person-outline" style="display:block; font-size:20px; margin:0 auto 2px;"></ion-icon>
+          Perfil
+        </div>
+      </div>
+
+      <div style="padding:16px 16px 40px;">
+
+        <!-- ===== INICIO ===== -->
+        <div *ngIf="seccion === 'inicio'">
+
+          <div style="background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.05)); border:1px solid rgba(212,175,55,0.2); border-radius:24px; padding:24px; margin-bottom:24px; position:relative; overflow:hidden;">
+            <div style="position:absolute; top:-20px; right:-20px; width:150px; height:150px; border-radius:50%; background:rgba(212,175,55,0.05);"></div>
+            <p style="font-size:12px; color:rgba(212,175,55,0.7); letter-spacing:1px; text-transform:uppercase; margin:0 0 8px;">Nueva colección</p>
+            <h2 style="font-size:24px; font-weight:800; color:#fff; margin:0 0 8px; line-height:1.2;">Moda que te<br>define ✨</h2>
+            <p style="font-size:13px; color:rgba(255,255,255,0.5); margin:0 0 16px;">Descubre los mejores estilos de temporada</p>
+            <button (click)="irACatalogo()"
+                    style="background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:12px; padding:10px 20px; color:#0a0a0a; font-size:14px; font-weight:700; cursor:pointer;">
+              Ver catálogo →
+            </button>
+          </div>
+
+          <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 12px;">Categorías</p>
+          <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:8px; margin-bottom:24px;">
+            <div (click)="categoriaSeleccionada = 'todas'; seccion = 'catalogo'"
+                 style="flex-shrink:0; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:14px; padding:12px 16px; cursor:pointer; text-align:center; min-width:80px;">
+              <ion-icon name="apps-outline" style="font-size:22px; color:#0a0a0a; display:block; margin:0 auto 4px;"></ion-icon>
+              <span style="font-size:11px; font-weight:700; color:#0a0a0a;">Todos</span>
+            </div>
+            <div *ngFor="let cat of categorias"
+                 (click)="categoriaSeleccionada = cat; seccion = 'catalogo'"
+                 style="flex-shrink:0; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px 16px; cursor:pointer; text-align:center; min-width:80px;">
+              <ion-icon name="shirt-outline" style="font-size:22px; color:#d4af37; display:block; margin:0 auto 4px;"></ion-icon>
+              <span style="font-size:11px; font-weight:600; color:rgba(255,255,255,0.7);">{{ cat }}</span>
+            </div>
+          </div>
+
+          <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 12px;">Destacados</p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div *ngFor="let p of productos.slice(0,4)"
+                 (click)="verProducto(p)"
+                 style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:18px; overflow:hidden; cursor:pointer;">
+              <!-- Imagen 220px fondo blanco -->
+              <div style="width:100%; height:220px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img *ngIf="p.imagen_url" [src]="p.imagen_url"
+                     style="width:100%; height:100%; object-fit:contain;"
+                     (error)="$event.target.style.display='none'">
+                <ion-icon *ngIf="!p.imagen_url" name="shirt-outline"
+                          style="font-size:40px; color:rgba(212,175,55,0.2);"></ion-icon>
+              </div>
+              <div style="padding:10px 12px 12px;">
+                <p style="font-size:13px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.nombre }}</p>
+                <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0 0 8px;">{{ p.categoria }}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:16px; font-weight:800; color:#d4af37;">${{ p.precio_venta }}</span>
+                  <div (click)="$event.stopPropagation(); agregarAlCarrito(p)"
+                       style="width:28px; height:28px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                    <ion-icon name="add-outline" style="font-size:16px; color:#0a0a0a;"></ion-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button *ngIf="productos.length > 4" (click)="irACatalogo()"
+                  style="width:100%; height:48px; background:transparent; border:1px solid rgba(212,175,55,0.25); border-radius:14px; color:#d4af37; font-size:14px; font-weight:600; cursor:pointer; margin-top:16px;">
+            Ver todos ({{ productos.length }} productos)
+          </button>
+
+        </div>
+
+        <!-- ===== CATÁLOGO ===== -->
+        <div *ngIf="seccion === 'catalogo'">
+
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:4px 16px; margin-bottom:14px;">
+            <ion-icon name="search-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:10px;"></ion-icon>
+            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:44px; font-size:15px;"
+                       placeholder="Buscar ropa, marcas..."
+                       [(ngModel)]="busqueda">
+            </ion-input>
+          </div>
+
+          <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:16px;">
+            <div (click)="categoriaSeleccionada = 'todas'"
+                 [style.background]="categoriaSeleccionada === 'todas' ? 'linear-gradient(135deg,#d4af37,#f5d76e)' : 'rgba(255,255,255,0.05)'"
+                 [style.color]="categoriaSeleccionada === 'todas' ? '#0a0a0a' : 'rgba(255,255,255,0.6)'"
+                 [style.border]="categoriaSeleccionada === 'todas' ? 'none' : '1px solid rgba(255,255,255,0.08)'"
+                 style="flex-shrink:0; border-radius:20px; padding:6px 16px; font-size:12px; font-weight:600; cursor:pointer;">
+              Todas
+            </div>
+            <div *ngFor="let cat of categorias"
+                 (click)="categoriaSeleccionada = cat"
+                 [style.background]="categoriaSeleccionada === cat ? 'linear-gradient(135deg,#d4af37,#f5d76e)' : 'rgba(255,255,255,0.05)'"
+                 [style.color]="categoriaSeleccionada === cat ? '#0a0a0a' : 'rgba(255,255,255,0.6)'"
+                 [style.border]="categoriaSeleccionada === cat ? 'none' : '1px solid rgba(255,255,255,0.08)'"
+                 style="flex-shrink:0; border-radius:20px; padding:6px 16px; font-size:12px; font-weight:600; cursor:pointer;">
+              {{ cat }}
+            </div>
+          </div>
+
+          <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 14px;">
+            {{ productosFiltrados.length }} productos encontrados
+          </p>
+
+          <!-- Grid catálogo -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div *ngFor="let p of productosFiltrados"
+                 (click)="verProducto(p)"
+                 style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:18px; overflow:hidden; cursor:pointer;">
+              <!-- Imagen 220px fondo blanco -->
+              <div style="width:100%; height:220px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">
+                <img *ngIf="p.imagen_url" [src]="p.imagen_url"
+                     style="width:100%; height:100%; object-fit:contain;"
+                     (error)="$event.target.style.display='none'">
+                <ion-icon *ngIf="!p.imagen_url" name="shirt-outline"
+                          style="font-size:44px; color:rgba(212,175,55,0.2);"></ion-icon>
+                <!-- Badge talla -->
+                <div *ngIf="p.talla"
+                     style="position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.7); border-radius:6px; padding:2px 8px;">
+                  <span style="font-size:11px; font-weight:700; color:#fff;">{{ p.talla }}</span>
+                </div>
+                <!-- Badge ver -->
+                <div style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.6); border-radius:8px; padding:4px 8px; display:flex; align-items:center; gap:4px;">
+                  <ion-icon name="eye-outline" style="font-size:12px; color:#d4af37;"></ion-icon>
+                  <span style="font-size:10px; color:#d4af37; font-weight:600;">Ver</span>
+                </div>
+              </div>
+              <div style="padding:10px 12px 12px;">
+                <p style="font-size:13px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.nombre }}</p>
+                <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0 0 2px;">{{ p.marca || p.categoria }}</p>
+                <p style="font-size:11px; color:rgba(255,255,255,0.25); margin:0 0 8px;">{{ p.color || '' }}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:16px; font-weight:800; color:#d4af37;">${{ p.precio_venta }}</span>
+                  <div (click)="$event.stopPropagation(); agregarAlCarrito(p)"
+                       style="width:32px; height:32px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <ion-icon name="add-outline" style="font-size:18px; color:#0a0a0a;"></ion-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="productosFiltrados.length === 0"
+               style="text-align:center; padding:48px 20px;">
+            <ion-icon name="search-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+            <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">No se encontraron productos.</p>
+          </div>
+
+        </div>
+
+        <!-- ===== CARRITO ===== -->
+        <div *ngIf="seccion === 'carrito'">
+
+          <p style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin:0 0 16px;">Mi carrito</p>
+
+          <div *ngIf="carrito.length === 0" style="text-align:center; padding:48px 20px;">
+            <div style="width:72px; height:72px; background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.15); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+              <ion-icon name="cart-outline" style="font-size:36px; color:rgba(212,175,55,0.4);"></ion-icon>
+            </div>
+            <p style="font-size:16px; font-weight:700; color:rgba(255,255,255,0.5); margin:0 0 8px;">Tu carrito está vacío</p>
+            <p style="font-size:13px; color:rgba(255,255,255,0.25); margin:0 0 20px;">Agrega productos desde el catálogo</p>
+            <button (click)="seccion = 'catalogo'"
+                    style="background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:12px; padding:12px 24px; color:#0a0a0a; font-size:14px; font-weight:700; cursor:pointer;">
+              Ver catálogo
+            </button>
+          </div>
+
+          <div *ngFor="let item of carrito"
+               style="display:flex; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(212,175,55,0.12); border-radius:18px; padding:14px; margin-bottom:12px;">
+            <div style="width:70px; height:70px; border-radius:12px; overflow:hidden; background:#fff; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+              <img *ngIf="item.imagen_url" [src]="item.imagen_url"
+                   style="width:100%; height:100%; object-fit:contain;"
+                   (error)="$event.target.style.display='none'">
+              <ion-icon *ngIf="!item.imagen_url" name="shirt-outline"
+                        style="font-size:28px; color:rgba(212,175,55,0.3);"></ion-icon>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:700; color:#fff; margin:0 0 2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ item.nombre }}</p>
+              <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 8px;">{{ item.talla || '-' }} · {{ item.color || '-' }}</p>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div (click)="cambiarCantidad(item, -1)"
+                       style="width:28px; height:28px; background:rgba(255,255,255,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <ion-icon name="remove-outline" style="font-size:14px; color:#fff;"></ion-icon>
+                  </div>
+                  <span style="font-size:15px; font-weight:700; color:#fff; min-width:16px; text-align:center;">{{ item.cantidad }}</span>
+                  <div (click)="cambiarCantidad(item, 1)"
+                       style="width:28px; height:28px; background:rgba(212,175,55,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <ion-icon name="add-outline" style="font-size:14px; color:#d4af37;"></ion-icon>
+                  </div>
+                </div>
+                <p style="font-size:16px; font-weight:800; color:#d4af37; margin:0;">${{ item.subtotal.toFixed(2) }}</p>
+              </div>
+            </div>
+            <div (click)="eliminarDelCarrito(item)"
+                 style="width:32px; height:32px; background:rgba(239,68,68,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; align-self:flex-start;">
+              <ion-icon name="trash-outline" style="font-size:15px; color:#ef4444;"></ion-icon>
+            </div>
+          </div>
+
+          <div *ngIf="carrito.length > 0"
+               style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:20px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="color:rgba(255,255,255,0.4); font-size:14px;">Subtotal ({{ cantidadCarrito }} items)</span>
+              <span style="color:#fff; font-size:14px; font-weight:600;">${{ totalCarrito.toFixed(2) }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:12px; padding:12px 16px; margin-top:12px;">
+              <span style="color:#fff; font-size:18px; font-weight:700;">TOTAL</span>
+              <span style="color:#d4af37; font-size:22px; font-weight:800;">${{ totalCarrito.toFixed(2) }}</span>
+            </div>
+            <button (click)="confirmarPedido()"
+                    style="width:100%; height:54px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:17px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; box-shadow:0 8px 24px rgba(212,175,55,0.3);">
+              <ion-icon name="checkmark-circle-outline" style="font-size:22px;"></ion-icon>
+              Confirmar pedido
+            </button>
+            <button (click)="seccion = 'catalogo'"
+                    style="width:100%; height:44px; background:transparent; border:none; color:rgba(255,255,255,0.3); font-size:14px; cursor:pointer; margin-top:8px;">
+              Seguir comprando
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ===== PERFIL ===== -->
+        <div *ngIf="seccion === 'perfil'">
+
+          <div style="text-align:center; padding:24px 0 20px;">
+            <div style="width:80px; height:80px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 8px 24px rgba(212,175,55,0.3);">
+              <ion-icon name="person-outline" style="font-size:40px; color:#0a0a0a;"></ion-icon>
+            </div>
+            <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 4px;">{{ nombre }}</h2>
+            <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:0;">Cliente Tienda GM</p>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; margin-bottom:16px;">
+            <div style="display:flex; align-items:center; gap:14px; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+              <div style="width:40px; height:40px; background:rgba(212,175,55,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                <ion-icon name="shirt-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+              </div>
+              <div style="flex:1;">
+                <p style="font-size:14px; font-weight:600; color:#fff; margin:0;">Mis compras</p>
+                <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Historial de pedidos</p>
+              </div>
+              <ion-icon name="chevron-forward-outline" style="color:rgba(255,255,255,0.2);"></ion-icon>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+              <div style="width:40px; height:40px; background:rgba(56,189,248,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                <ion-icon name="location-outline" style="font-size:18px; color:#38bdf8;"></ion-icon>
+              </div>
+              <div style="flex:1;">
+                <p style="font-size:14px; font-weight:600; color:#fff; margin:0;">Dirección de entrega</p>
+                <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Gestionar direcciones</p>
+              </div>
+              <ion-icon name="chevron-forward-outline" style="color:rgba(255,255,255,0.2);"></ion-icon>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; padding:16px;">
+              <div style="width:40px; height:40px; background:rgba(168,139,250,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                <ion-icon name="notifications-outline" style="font-size:18px; color:#a78bfa;"></ion-icon>
+              </div>
+              <div style="flex:1;">
+                <p style="font-size:14px; font-weight:600; color:#fff; margin:0;">Notificaciones</p>
+                <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0;">Configurar alertas</p>
+              </div>
+              <ion-icon name="chevron-forward-outline" style="color:rgba(255,255,255,0.2);"></ion-icon>
+            </div>
+          </div>
+
+          <button (click)="cerrarSesion()"
+                  style="width:100%; height:52px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:14px; color:#ef4444; font-size:15px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <ion-icon name="log-out-outline" style="font-size:18px;"></ion-icon>
+            Cerrar sesión
+          </button>
+
+        </div>
+
+      </div>
+    </div>
   </div>
-
-  <ion-grid>
-    <ion-row>
-
-      <ion-col size="6">
-        <ion-card>
-          <ion-card-content style="text-align:center;">
-            <ion-icon name="shirt-outline"
-              style="font-size:40px; color:var(--ion-color-primary);"></ion-icon>
-            <h3>Catálogo</h3>
-            <p style="color:gray; font-size:13px;">Ver productos</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6">
-        <ion-card>
-          <ion-card-content style="text-align:center;">
-            <ion-icon name="receipt-outline"
-              style="font-size:40px; color:var(--ion-color-success);"></ion-icon>
-            <h3>Mis pedidos</h3>
-            <p style="color:gray; font-size:13px;">Ver historial</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6">
-        <ion-card>
-          <ion-card-content style="text-align:center;">
-            <ion-icon name="person-outline"
-              style="font-size:40px; color:var(--ion-color-warning);"></ion-icon>
-            <h3>Mi perfil</h3>
-            <p style="color:gray; font-size:13px;">Ver mis datos</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6">
-        <ion-card>
-          <ion-card-content style="text-align:center;">
-            <ion-icon name="call-outline"
-              style="font-size:40px; color:var(--ion-color-danger);"></ion-icon>
-            <h3>Contacto</h3>
-            <p style="color:gray; font-size:13px;">Comunícate</p>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-    </ion-row>
-  </ion-grid>
-
 </ion-content>

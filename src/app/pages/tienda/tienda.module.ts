@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
+import { RouterModule } from '@angular/router';
 import { TiendaPageRoutingModule } from './tienda-routing.module';
-
 import { TiendaPage } from './tienda.page';
 
 @NgModule({
@@ -13,6 +11,7 @@ import { TiendaPage } from './tienda.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    RouterModule,
     TiendaPageRoutingModule
   ],
   declarations: [TiendaPage]
