@@ -54,6 +54,22 @@ const routes: Routes = [
   {
     path: 'clientes-admin',
     loadChildren: () => import('./pages/clientes-admin/clientes-admin.module').then( m => m.ClientesAdminPageModule)
+  },
+  {
+    path: 'proveedores',
+    loadChildren: () => import('./pages/proveedores/proveedores.module').then( m => m.ProveedoresPageModule)
+  },
+  {
+    path: 'categorias',
+    loadChildren: () => import('./pages/categorias/categorias.module').then( m => m.CategoriasPageModule)
+  },
+  {
+    path: 'perfil-admin',
+    loadChildren: () => import('./pages/perfil-admin/perfil-admin.module').then( m => m.PerfilAdminPageModule)
+  },
+  {
+    path: 'compras',
+    loadChildren: () => import('./pages/compras/compras.module').then( m => m.ComprasPageModule)
   }
 
 ];

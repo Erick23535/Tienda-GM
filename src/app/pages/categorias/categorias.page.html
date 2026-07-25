@@ -1,0 +1,168 @@
+<ion-content style="--background:#0a0a0a;">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
+
+    <!-- Header -->
+    <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div routerLink="/dashboard"
+             style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
+        </div>
+        <div>
+          <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; text-transform:uppercase; letter-spacing:1px;">Administración</p>
+          <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Categorías</p>
+        </div>
+      </div>
+      <div *ngIf="!modoFormulario"
+           (click)="abrirFormulario()"
+           style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:12px; padding:9px 16px; cursor:pointer; box-shadow:0 4px 14px rgba(212,175,55,0.3);">
+        <ion-icon name="add-outline" style="font-size:18px; color:#0a0a0a;"></ion-icon>
+        <span style="font-size:13px; font-weight:700; color:#0a0a0a;">Nueva</span>
+      </div>
+    </div>
+
+    <div style="padding:16px 16px 40px;">
+
+      <!-- LISTA -->
+      <div *ngIf="!modoFormulario">
+
+        <!-- Estadísticas -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:18px;">
+          <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:14px 10px; text-align:center;">
+            <ion-icon name="pricetag-outline" style="font-size:18px; color:#a78bfa; margin-bottom:6px; display:block;"></ion-icon>
+            <p style="font-size:18px; font-weight:800; color:#fff; margin:0;">{{ totalCategorias }}</p>
+            <p style="font-size:9px; color:rgba(255,255,255,0.35); margin:0;">categorías</p>
+          </div>
+          <div style="background:rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.15); border-radius:14px; padding:14px 10px; text-align:center;">
+            <ion-icon name="shirt-outline" style="font-size:18px; color:#d4af37; margin-bottom:6px; display:block;"></ion-icon>
+            <p style="font-size:18px; font-weight:800; color:#d4af37; margin:0;">{{ totalProductosAsociados }}</p>
+            <p style="font-size:9px; color:rgba(255,255,255,0.35); margin:0;">productos</p>
+          </div>
+          <div style="background:rgba(168,139,250,0.06); border:1px solid rgba(168,139,250,0.15); border-radius:14px; padding:14px 6px; text-align:center;">
+            <ion-icon name="trophy-outline" style="font-size:18px; color:#a78bfa; margin-bottom:6px; display:block;"></ion-icon>
+            <p style="font-size:12px; font-weight:800; color:#a78bfa; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ categoriaMasGrande }}</p>
+            <p style="font-size:9px; color:rgba(255,255,255,0.35); margin:0;">top categoría</p>
+          </div>
+        </div>
+
+        <!-- Buscador -->
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:4px 16px; margin-bottom:20px;">
+          <ion-icon name="search-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:10px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:44px; font-size:15px;"
+                     placeholder="Buscar categoría..."
+                     [(ngModel)]="busqueda" debounce="300">
+          </ion-input>
+        </div>
+
+        <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 14px;">
+          {{ categoriasFiltradas.length }} categorías encontradas
+        </p>
+
+        <div *ngIf="categoriasFiltradas.length === 0"
+             style="text-align:center; padding:48px 20px;">
+          <ion-icon name="list-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
+          <p style="color:rgba(255,255,255,0.3); margin-top:12px;">No hay categorías registradas.</p>
+        </div>
+
+        <div *ngFor="let c of categoriasFiltradas"
+             style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:18px; overflow:hidden; margin-bottom:12px;">
+
+          <!-- Preview imagen si existe -->
+          <div *ngIf="c.imagen_url" style="width:100%; height:100px; overflow:hidden;">
+            <img [src]="c.imagen_url" style="width:100%; height:100%; object-fit:cover;"
+                 (error)="$event.target.style.display='none'">
+          </div>
+
+          <div style="padding:16px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+              <div style="width:44px; height:44px; background:rgba(168,139,250,0.1); border:1px solid rgba(168,139,250,0.2); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <ion-icon name="pricetag-outline" style="font-size:20px; color:#a78bfa;"></ion-icon>
+              </div>
+              <div style="flex:1;">
+                <p style="font-size:15px; font-weight:700; color:#fff; margin:0 0 2px;">{{ c.nombre }}</p>
+                <p *ngIf="c.descripcion" style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">{{ c.descripcion }}</p>
+              </div>
+              <div style="background:rgba(168,139,250,0.08); border:1px solid rgba(168,139,250,0.15); border-radius:10px; padding:6px 10px; text-align:center; flex-shrink:0;">
+                <p style="font-size:16px; font-weight:800; color:#a78bfa; margin:0;">{{ c.total_productos }}</p>
+                <p style="font-size:9px; color:rgba(255,255,255,0.35); margin:0;">productos</p>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              <div (click)="abrirFormulario(c)"
+                   style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:10px; padding:9px; cursor:pointer;">
+                <ion-icon name="pencil-outline" style="font-size:15px; color:#d4af37;"></ion-icon>
+                <span style="font-size:12px; font-weight:600; color:#d4af37;">Editar</span>
+              </div>
+              <div (click)="confirmarEliminar(c)"
+                   style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:9px; cursor:pointer;">
+                <ion-icon name="trash-outline" style="font-size:15px; color:#ef4444;"></ion-icon>
+                <span style="font-size:12px; font-weight:600; color:#ef4444;">Eliminar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div *ngIf="modoFormulario">
+
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+          <div (click)="cerrarFormulario()"
+               style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="arrow-back-outline" style="font-size:18px; color:#fff;"></ion-icon>
+          </div>
+          <h2 style="font-size:19px; font-weight:700; color:#fff; margin:0;">
+            {{ editando ? 'Editar categoría' : 'Nueva categoría' }}
+          </h2>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+          <ion-icon name="pricetag-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Nombre de la categoría *" [(ngModel)]="actual.nombre">
+          </ion-input>
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:20px;">
+          <ion-icon name="document-text-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+                     placeholder="Descripción (opcional)" [(ngModel)]="actual.descripcion">
+          </ion-input>
+        </div>
+
+        <!-- Imagen de categoría -->
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <ion-icon name="image-outline" style="font-size:14px; color:#d4af37;"></ion-icon>
+          <p style="font-size:11px; font-weight:700; color:#d4af37; letter-spacing:1px; text-transform:uppercase; margin:0;">Imagen (opcional)</p>
+        </div>
+
+        <div *ngIf="actual.imagen_url"
+             style="width:100%; height:140px; border-radius:16px; overflow:hidden; margin-bottom:12px; border:1px solid rgba(212,175,55,0.2);">
+          <img [src]="actual.imagen_url" style="width:100%; height:100%; object-fit:cover;"
+               (error)="$event.target.style.display='none'">
+        </div>
+
+        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); border-radius:14px; padding:4px 16px; margin-bottom:24px;">
+          <ion-icon name="link-outline" style="font-size:18px; color:#d4af37; margin-right:12px;"></ion-icon>
+          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:14px;"
+                     placeholder="URL de imagen (ej: desde Unsplash)"
+                     [(ngModel)]="actual.imagen_url">
+          </ion-input>
+        </div>
+
+        <button (click)="guardar()"
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+          <ion-icon name="save-outline" style="font-size:18px;"></ion-icon>
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+
+        <button (click)="cerrarFormulario()"
+                style="width:100%; height:48px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:rgba(255,255,255,0.4); font-size:15px; cursor:pointer;">
+          Cancelar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</ion-content>

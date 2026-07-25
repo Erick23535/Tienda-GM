@@ -13,6 +13,8 @@ export class ProductosPage implements OnInit {
   productos:  any[] = [];
   categorias: any[] = [];
   busqueda  = '';
+  categoriaFiltro = 'todas';
+  vistaGrid = true;
   modoFormulario = false;
   editando       = false;
   productoActual: any = {};
@@ -45,12 +47,51 @@ export class ProductosPage implements OnInit {
   }
 
   get productosFiltrados() {
-    if (!this.busqueda) return this.productos;
-    const b = this.busqueda.toLowerCase();
-    return this.productos.filter(p =>
-      p.nombre.toLowerCase().includes(b) ||
-      p.codigo.toLowerCase().includes(b)
-    );
+    let lista = this.productos;
+    if (this.categoriaFiltro !== 'todas') {
+      lista = lista.filter(p => p.categoria === this.categoriaFiltro);
+    }
+    if (this.busqueda) {
+      const b = this.busqueda.toLowerCase();
+      lista = lista.filter(p =>
+        p.nombre.toLowerCase().includes(b) ||
+        p.codigo.toLowerCase().includes(b)
+      );
+    }
+    return lista;
+  }
+
+  get totalProductos(): number {
+    return this.productos.length;
+  }
+
+  get totalStockBajo(): number {
+    return this.productos.filter(p => this.stockBajo(p)).length;
+  }
+
+  get valorInventario(): number {
+    return this.productos.reduce((acc, p) => acc + (Number(p.precio_venta) * Number(p.stock_actual)), 0);
+  }
+
+  get nombresCategorias(): string[] {
+    const cats = [...new Set(this.productos.map(p => p.categoria))];
+    return cats.filter(c => c) as string[];
+  }
+
+  esNuevo(producto: any): boolean {
+    if (!producto.fecha_creacion) return false;
+    const fecha = new Date(producto.fecha_creacion);
+    const dias  = (Date.now() - fecha.getTime()) / (1000 * 60 * 60 * 24);
+    return dias <= 7;
+  }
+
+  tieneDescuento(producto: any): boolean {
+    return producto.precio_original && producto.precio_original > producto.precio_venta;
+  }
+
+  porcentajeDescuento(producto: any): number {
+    if (!this.tieneDescuento(producto)) return 0;
+    return Math.round(100 - (producto.precio_venta / producto.precio_original * 100));
   }
 
   abrirFormulario(producto?: any) {
@@ -58,7 +99,7 @@ export class ProductosPage implements OnInit {
     this.productoActual = producto ? { ...producto } : {
       id_categoria: '', codigo: '', nombre: '', talla: '',
       color: '', marca: '', imagen_url: '',
-      precio_compra: 0, precio_venta: 0,
+      precio_compra: 0, precio_venta: 0, precio_original: null,
       stock_actual: 0, stock_minimo: 5
     };
     this.modoFormulario = true;
@@ -100,7 +141,7 @@ export class ProductosPage implements OnInit {
   async confirmarEliminar(producto: any) {
     const alerta = await this.alert.create({
       header:  'Eliminar producto',
-      message: `¿Eliminar "${producto.nombre}"?`,
+      message: `¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { text: 'Eliminar', role: 'destructive', handler: () => this.eliminar(producto.id_producto) }

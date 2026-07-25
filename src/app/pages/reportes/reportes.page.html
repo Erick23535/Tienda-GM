@@ -54,6 +54,13 @@
           Resumen general
         </p>
 
+        <!-- Botón exportar -->
+        <div (click)="exportarResumenPDF()"
+             style="display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.25); border-radius:12px; padding:10px; margin-bottom:16px; cursor:pointer;">
+          <ion-icon name="download-outline" style="font-size:16px; color:#d4af37;"></ion-icon>
+          <span style="font-size:13px; font-weight:600; color:#d4af37;">Descargar PDF</span>
+        </div>
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
 
           <div style="background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05)); border:1px solid rgba(212,175,55,0.25); border-radius:20px; padding:20px 16px;">
@@ -150,7 +157,15 @@
           <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">No hay ventas registradas hoy.</p>
         </div>
 
-        <!-- Total del día — USA totalDia en lugar de reduce en el template -->
+        <!-- Botón exportar -->
+        <div *ngIf="ventasDia.length > 0"
+             (click)="exportarVentasDiaPDF()"
+             style="display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.25); border-radius:12px; padding:10px; margin-bottom:16px; cursor:pointer;">
+          <ion-icon name="download-outline" style="font-size:16px; color:#22c55e;"></ion-icon>
+          <span style="font-size:13px; font-weight:600; color:#22c55e;">Descargar PDF</span>
+        </div>
+
+        <!-- Total del día -->
         <div *ngIf="ventasDia.length > 0"
              style="background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.04)); border:1px solid rgba(34,197,94,0.2); border-radius:20px; padding:20px; margin-bottom:16px;">
           <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0 0 4px; letter-spacing:1px; text-transform:uppercase;">Total recaudado hoy</p>
@@ -212,6 +227,14 @@
           </div>
         </div>
 
+        <!-- Botón exportar -->
+        <div *ngIf="stockBajo.length > 0"
+             (click)="exportarStockBajoPDF()"
+             style="display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); border-radius:12px; padding:10px; margin-bottom:16px; cursor:pointer;">
+          <ion-icon name="download-outline" style="font-size:16px; color:#ef4444;"></ion-icon>
+          <span style="font-size:13px; font-weight:600; color:#ef4444;">Descargar PDF</span>
+        </div>
+
         <div *ngFor="let p of stockBajo; let i = index"
              style="background:rgba(255,255,255,0.04); border:1px solid rgba(239,68,68,0.15); border-radius:18px; padding:16px; margin-bottom:10px;">
 
@@ -260,6 +283,14 @@
         <div *ngIf="masVendidos.length === 0" style="text-align:center; padding:48px 20px;">
           <ion-icon name="trophy-outline" style="font-size:48px; color:rgba(212,175,55,0.2);"></ion-icon>
           <p style="color:rgba(255,255,255,0.3); margin-top:12px; font-size:14px;">Aún no hay ventas registradas.</p>
+        </div>
+
+        <!-- Botón exportar -->
+        <div *ngIf="masVendidos.length > 0"
+             (click)="exportarMasVendidosPDF()"
+             style="display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.25); border-radius:12px; padding:10px; margin-bottom:16px; cursor:pointer;">
+          <ion-icon name="download-outline" style="font-size:16px; color:#d4af37;"></ion-icon>
+          <span style="font-size:13px; font-weight:600; color:#d4af37;">Descargar PDF</span>
         </div>
 
         <div *ngIf="masVendidos.length > 0" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;">
