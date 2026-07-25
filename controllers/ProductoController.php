@@ -51,8 +51,8 @@ class ProductoController {
         $stmt = $this->db->prepare("
             INSERT INTO productos 
                 (id_categoria, id_proveedor, codigo, nombre, talla, color, marca,
-                 imagen_url, precio_compra, precio_venta, stock_actual, stock_minimo, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activo')
+                 imagen_url, precio_compra, precio_venta, precio_original, stock_actual, stock_minimo, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activo')
         ");
         $stmt->execute([
             $body['id_categoria'],
@@ -65,6 +65,7 @@ class ProductoController {
             $body['imagen_url']    ?? null,
             $body['precio_compra'],
             $body['precio_venta'],
+            $body['precio_original'] ?? null,
             $body['stock_actual'],
             $body['stock_minimo']  ?? 5,
         ]);
@@ -78,19 +79,20 @@ class ProductoController {
 
         $stmt = $this->db->prepare("
             UPDATE productos SET
-                id_categoria  = ?,
-                id_proveedor  = ?,
-                codigo        = ?,
-                nombre        = ?,
-                talla         = ?,
-                color         = ?,
-                marca         = ?,
-                imagen_url    = ?,
-                precio_compra = ?,
-                precio_venta  = ?,
-                stock_actual  = ?,
-                stock_minimo  = ?,
-                estado        = ?
+                id_categoria    = ?,
+                id_proveedor    = ?,
+                codigo          = ?,
+                nombre          = ?,
+                talla           = ?,
+                color           = ?,
+                marca           = ?,
+                imagen_url      = ?,
+                precio_compra   = ?,
+                precio_venta    = ?,
+                precio_original = ?,
+                stock_actual    = ?,
+                stock_minimo    = ?,
+                estado          = ?
             WHERE id_producto = ?
         ");
         $stmt->execute([
@@ -104,6 +106,7 @@ class ProductoController {
             $body['imagen_url']    ?? null,
             $body['precio_compra'],
             $body['precio_venta'],
+            $body['precio_original'] ?? null,
             $body['stock_actual'],
             $body['stock_minimo']  ?? 5,
             $body['estado']        ?? 'activo',

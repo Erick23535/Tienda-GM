@@ -11,11 +11,11 @@ class VentaController {
         $this->db = $database->getConnection();
     }
 
-    // GET /ventas — listar ventas
     public function listar() {
         $stmt = $this->db->query("
-            SELECT v.id_venta, v.fecha_venta, v.total, v.metodo_pago, v.estado,
+            SELECT v.id_venta, v.fecha_venta, v.total, v.metodo_pago, v.estado, v.estado_envio,
                    v.comprobante_url, v.datos_tarjeta,
+                   v.direccion_envio, v.ciudad_envio, v.telefono_contacto,
                    CONCAT(c.nombres, ' ', c.apellidos) as cliente,
                    CONCAT(u.nombres, ' ', u.apellidos) as vendedor
             FROM ventas v
@@ -24,11 +24,9 @@ class VentaController {
             ORDER BY v.fecha_venta DESC
             LIMIT 50
         ");
-        $ventas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        responder(200, "OK", $ventas);
+        responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    // GET /ventas/{id} — detalle de una venta
     public function obtener($id) {
         $stmt = $this->db->prepare("
             SELECT v.*,
@@ -56,29 +54,29 @@ class VentaController {
         responder(200, "OK", $venta);
     }
 
-    // POST /ventas — registrar venta
     public function crear() {
         $body = json_decode(file_get_contents("php://input"), true);
 
-        $id_usuario      = $body['id_usuario']      ?? null;
-        $id_cliente      = $body['id_cliente']      ?? null;
-        $metodo_pago     = $body['metodo_pago']     ?? 'efectivo';
-        $descuento       = $body['descuento']        ?? 0;
-        $observaciones   = $body['observaciones']    ?? '';
-        $comprobante_url = $body['comprobante_url']  ?? null;
-        $datos_tarjeta   = $body['datos_tarjeta']    ?? null;
-        $detalle         = $body['detalle']          ?? [];
+        $id_usuario        = $body['id_usuario']        ?? null;
+        $id_cliente        = $body['id_cliente']        ?? null;
+        $metodo_pago       = $body['metodo_pago']       ?? 'efectivo';
+        $descuento         = $body['descuento']          ?? 0;
+        $observaciones     = $body['observaciones']      ?? '';
+        $comprobante_url   = $body['comprobante_url']    ?? null;
+        $datos_tarjeta     = $body['datos_tarjeta']      ?? null;
+        $direccion_envio   = $body['direccion_envio']    ?? null;
+        $ciudad_envio      = $body['ciudad_envio']       ?? null;
+        $telefono_contacto = $body['telefono_contacto']  ?? null;
+        $detalle           = $body['detalle']            ?? [];
 
         if (!$id_usuario || empty($detalle)) {
             responder(400, "Usuario y productos son obligatorios.");
         }
 
-        // Validar comprobante si es transferencia
         if ($metodo_pago === 'transferencia' && empty($comprobante_url)) {
             responder(400, "Debes adjuntar el comprobante de transferencia.");
         }
 
-        // Validar datos tarjeta si es tarjeta
         if ($metodo_pago === 'tarjeta' && empty($datos_tarjeta)) {
             responder(400, "Debes ingresar los datos de la tarjeta.");
         }
@@ -88,7 +86,6 @@ class VentaController {
         try {
             $subtotal = 0;
 
-            // Verificar stock y calcular subtotal
             foreach ($detalle as $item) {
                 $stmt = $this->db->prepare("
                     SELECT stock_actual, precio_venta, nombre
@@ -113,21 +110,21 @@ class VentaController {
             $total = $subtotal - $descuento;
             if ($total < 0) $total = 0;
 
-            // Insertar venta con todos los campos
             $stmt = $this->db->prepare("
                 INSERT INTO ventas 
                     (id_cliente, id_usuario, subtotal, descuento, total,
-                     metodo_pago, estado, observaciones, comprobante_url, datos_tarjeta)
-                VALUES (?, ?, ?, ?, ?, ?, 'completada', ?, ?, ?)
+                     metodo_pago, estado, observaciones, comprobante_url, datos_tarjeta,
+                     direccion_envio, ciudad_envio, telefono_contacto)
+                VALUES (?, ?, ?, ?, ?, ?, 'completada', ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $id_cliente, $id_usuario, $subtotal,
                 $descuento, $total, $metodo_pago,
-                $observaciones, $comprobante_url, $datos_tarjeta
+                $observaciones, $comprobante_url, $datos_tarjeta,
+                $direccion_envio, $ciudad_envio, $telefono_contacto
             ]);
             $id_venta = $this->db->lastInsertId();
 
-            // Insertar detalle y descontar stock
             foreach ($detalle as $item) {
                 $stmt = $this->db->prepare("
                     SELECT precio_venta, stock_actual FROM productos
@@ -179,7 +176,6 @@ class VentaController {
         }
     }
 
-    // PUT /ventas/{id}/anular — anular venta y devolver stock
     public function anular($id) {
         $stmt = $this->db->prepare("
             SELECT * FROM ventas WHERE id_venta = ? AND estado = 'completada'
@@ -234,5 +230,35 @@ class VentaController {
             $this->db->rollBack();
             responder(500, "Error al anular: " . $e->getMessage());
         }
+    }
+
+    public function actualizarEstadoEnvio($id) {
+        $body = json_decode(file_get_contents("php://input"), true);
+        $estado_envio = $body['estado_envio'] ?? '';
+
+        if (!in_array($estado_envio, ['pendiente', 'despachado', 'entregado'])) {
+            responder(400, "Estado de envío no válido.");
+        }
+
+        $stmt = $this->db->prepare("SELECT id_venta FROM ventas WHERE id_venta = ?");
+        $stmt->execute([$id]);
+        if (!$stmt->fetch()) responder(404, "Venta no encontrada.");
+
+        $this->db->prepare("UPDATE ventas SET estado_envio = ? WHERE id_venta = ?")
+                 ->execute([$estado_envio, $id]);
+
+        responder(200, "Estado de envío actualizado.");
+    }
+
+    public function listarPorCliente($id_cliente) {
+        $stmt = $this->db->prepare("
+            SELECT id_venta, fecha_venta, total, metodo_pago, estado, estado_envio,
+                   direccion_envio, ciudad_envio
+            FROM ventas
+            WHERE id_cliente = ?
+            ORDER BY fecha_venta DESC
+        ");
+        $stmt->execute([$id_cliente]);
+        responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 }

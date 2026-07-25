@@ -37,14 +37,12 @@ class ClienteController {
             responder(400, "La contraseña debe tener mínimo 6 caracteres.");
         }
 
-        // Verificar correo duplicado
         $stmt = $this->db->prepare("SELECT id_cliente FROM clientes WHERE correo = ?");
         $stmt->execute([$correo]);
         if ($stmt->fetch()) {
             responder(409, "El correo ya está registrado.");
         }
 
-        // Guardar con respuestas en minúsculas para comparación flexible
         $hash = password_hash($contrasena, PASSWORD_BCRYPT);
         $stmt = $this->db->prepare("
             INSERT INTO clientes
@@ -72,17 +70,6 @@ class ClienteController {
             responder(400, "Correo y contraseña son obligatorios.");
         }
 
-        // Verificar intentos fallidos
-        $stmt = $this->db->prepare("
-            SELECT COUNT(*) as intentos FROM intentos_login
-            WHERE ip = ? AND exitoso = 0
-            AND fecha > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-        ");
-        $stmt->execute([$_SERVER['REMOTE_ADDR']]);
-        if ($stmt->fetch(PDO::FETCH_ASSOC)['intentos'] >= 5) {
-            responder(429, "Demasiados intentos. Espera 15 minutos.");
-        }
-
         $stmt = $this->db->prepare("
             SELECT * FROM clientes WHERE correo = ? AND activo = 1 LIMIT 1
         ");
@@ -100,7 +87,6 @@ class ClienteController {
             responder(401, "Correo o contraseña incorrectos.");
         }
 
-        // Generar sesión
         $token  = bin2hex(random_bytes(32));
         $expira = date('Y-m-d H:i:s', strtotime('+8 hours'));
 
@@ -115,14 +101,15 @@ class ClienteController {
         ]);
 
         responder(200, "Login exitoso.", [
-            "token"     => $token,
-            "nombres"   => $cliente['nombres'],
-            "apellidos" => $cliente['apellidos'],
-            "correo"    => $cliente['correo']
+            "id_cliente" => $cliente['id_cliente'],
+            "token"      => $token,
+            "nombres"    => $cliente['nombres'],
+            "apellidos"  => $cliente['apellidos'],
+            "correo"     => $cliente['correo']
         ]);
     }
 
-    // POST /clientes/preguntas — obtener preguntas por correo
+    // POST /clientes/preguntas
     public function obtenerPreguntas() {
         $body   = json_decode(file_get_contents("php://input"), true);
         $correo = trim($body['correo'] ?? '');
@@ -177,7 +164,6 @@ class ClienteController {
             responder(401, "Las respuestas no son correctas.");
         }
 
-        // Generar token temporal para cambiar contraseña (5 minutos)
         $token  = bin2hex(random_bytes(32));
         $expira = date('Y-m-d H:i:s', strtotime('+5 minutes'));
 
