@@ -14,22 +14,28 @@ export class VentaService {
   }
 
   listar() {
-    return this.http.get<any>(`${this.API}/ventas`,
-      { headers: this.headers() });
+    return this.http.get<any>(`${this.API}/ventas`, { headers: this.headers() });
   }
 
   obtener(id: number) {
-    return this.http.get<any>(`${this.API}/ventas/${id}`,
-      { headers: this.headers() });
+    return this.http.get<any>(`${this.API}/ventas/${id}`, { headers: this.headers() });
   }
 
   crear(venta: any) {
-    return this.http.post<any>(`${this.API}/ventas`, venta,
-      { headers: this.headers() });
+    return this.http.post<any>(`${this.API}/ventas`, venta, { headers: this.headers() });
   }
 
   anular(id: number) {
-    return this.http.put<any>(`${this.API}/ventas/${id}/anular`, {},
+    return this.http.put<any>(`${this.API}/ventas/${id}/anular`, {}, { headers: this.headers() });
+  }
+
+  actualizarEstadoEnvio(id: number, estado_envio: string) {
+    return this.http.put<any>(`${this.API}/ventas/${id}/estado-envio`, { estado_envio },
+      { headers: this.headers() });
+  }
+
+  listarPorCliente(id_cliente: string) {
+    return this.http.get<any>(`${this.API}/ventas/cliente/${id_cliente}`,
       { headers: this.headers() });
   }
 }

@@ -13,22 +13,12 @@ export class VentasPage implements OnInit {
 
   seccion = 'nueva';
 
-  productos:     any[] = [];
-  carrito:       any[] = [];
-  metodo_pago  = 'efectivo';
-  descuento    = 0;
-  observaciones  = '';
-  busqueda     = '';
-
-  // Transferencia
-  comprobante_url  = '';
-  comprobante_preview = '';
-
-  // Tarjeta
-  tarjeta_nombre   = '';
-  tarjeta_numero   = '';
-  tarjeta_expiry   = '';
-  tarjeta_cvv      = '';
+  productos:    any[] = [];
+  carrito:      any[] = [];
+  metodo_pago = 'efectivo';
+  descuento   = 0;
+  observaciones = '';
+  busqueda    = '';
 
   ventas: any[] = [];
 
@@ -84,17 +74,20 @@ export class VentasPage implements OnInit {
       }
     } else {
       this.carrito.push({
-        id_producto:     producto.id_producto,
-        nombre:          producto.nombre,
-        talla:           producto.talla,
-        color:           producto.color,
-        imagen_url:      producto.imagen_url,
+        id_producto:   producto.id_producto,
+        nombre:        producto.nombre,
+        talla:         producto.talla,
+        color:         producto.color,
         precio_unitario: producto.precio_venta,
-        cantidad:        1,
-        subtotal:        producto.precio_venta,
-        stock_max:       producto.stock_actual
+        cantidad:      1,
+        subtotal:      producto.precio_venta,
+        stock_max:     producto.stock_actual
       });
     }
+  }
+
+  quitarDelCarrito(index: number) {
+    this.carrito.splice(index, 1);
   }
 
   cambiarCantidad(item: any, delta: number) {
@@ -120,50 +113,11 @@ export class VentasPage implements OnInit {
     return t < 0 ? 0 : t;
   }
 
-  // Previsualizar imagen del comprobante al pegar URL
-  onComprobanteUrlChange() {
-    this.comprobante_preview = this.comprobante_url;
-  }
-
-  // Formatear número de tarjeta con espacios
-  formatearTarjeta() {
-    let val = this.tarjeta_numero.replace(/\D/g, '').substring(0, 16);
-    this.tarjeta_numero = val.replace(/(.{4})/g, '$1 ').trim();
-  }
-
-  // Formatear expiración MM/AA
-  formatearExpiry() {
-    let val = this.tarjeta_expiry.replace(/\D/g, '').substring(0, 4);
-    if (val.length >= 3) {
-      this.tarjeta_expiry = val.substring(0, 2) + '/' + val.substring(2);
-    } else {
-      this.tarjeta_expiry = val;
-    }
-  }
-
-  validarPago(): boolean {
-    if (this.metodo_pago === 'transferencia') {
-      if (!this.comprobante_url) {
-        this.mostrarToast('Debes adjuntar el comprobante de transferencia.', 'warning');
-        return false;
-      }
-    }
-    if (this.metodo_pago === 'tarjeta') {
-      if (!this.tarjeta_nombre || !this.tarjeta_numero || !this.tarjeta_expiry || !this.tarjeta_cvv) {
-        this.mostrarToast('Completa todos los datos de la tarjeta.', 'warning');
-        return false;
-      }
-    }
-    return true;
-  }
-
   async registrarVenta() {
     if (this.carrito.length === 0) {
       this.mostrarToast('Agrega productos al carrito.', 'warning');
       return;
     }
-
-    if (!this.validarPago()) return;
 
     const alerta = await this.alert.create({
       header:  'Confirmar venta',
@@ -182,21 +136,12 @@ export class VentasPage implements OnInit {
 
     const id_usuario = 1;
 
-    // Armar datos de tarjeta como string
-    let datos_tarjeta = null;
-    if (this.metodo_pago === 'tarjeta') {
-      const num = this.tarjeta_numero.replace(/\s/g, '');
-      datos_tarjeta = `${this.tarjeta_nombre}|****${num.slice(-4)}|${this.tarjeta_expiry}`;
-    }
-
     const payload = {
       id_usuario,
-      id_cliente:      null,
-      metodo_pago:     this.metodo_pago,
-      descuento:       this.descuento,
-      observaciones:   this.observaciones,
-      comprobante_url: this.metodo_pago === 'transferencia' ? this.comprobante_url : null,
-      datos_tarjeta,
+      id_cliente:    null,
+      metodo_pago:   this.metodo_pago,
+      descuento:     this.descuento,
+      observaciones: this.observaciones,
       detalle: this.carrito.map(i => ({
         id_producto: i.id_producto,
         cantidad:    i.cantidad
@@ -206,8 +151,13 @@ export class VentasPage implements OnInit {
     this.ventaSvc.crear(payload).subscribe({
       next: async (res) => {
         await loader.dismiss();
-        this.mostrarToast(`Venta #${res.datos.id_venta} registrada. Total: $${res.datos.total}`, 'success');
-        this.limpiarFormulario();
+        this.mostrarToast(
+          `Venta #${res.datos.id_venta} registrada. Total: $${res.datos.total}`,
+          'success'
+        );
+        this.carrito       = [];
+        this.descuento     = 0;
+        this.observaciones = '';
         this.cargarProductos();
       },
       error: async (err) => {
@@ -217,25 +167,17 @@ export class VentasPage implements OnInit {
     });
   }
 
-  limpiarFormulario() {
-    this.carrito          = [];
-    this.descuento        = 0;
-    this.observaciones    = '';
-    this.comprobante_url  = '';
-    this.comprobante_preview = '';
-    this.tarjeta_nombre   = '';
-    this.tarjeta_numero   = '';
-    this.tarjeta_expiry   = '';
-    this.tarjeta_cvv      = '';
-  }
-
   async confirmarAnular(venta: any) {
     const alerta = await this.alert.create({
       header:  'Anular venta',
       message: `¿Anular venta #${venta.id_venta}? El stock será devuelto.`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
-        { text: 'Anular', role: 'destructive', handler: () => this.anularVenta(venta.id_venta) }
+        {
+          text: 'Anular',
+          role: 'destructive',
+          handler: () => this.anularVenta(venta.id_venta)
+        }
       ]
     });
     await alerta.present();
@@ -251,6 +193,16 @@ export class VentasPage implements OnInit {
       error: (err) => {
         this.mostrarToast(err.error?.mensaje || 'Error al anular.', 'danger');
       }
+    });
+  }
+
+  async cambiarEstadoEnvio(venta: any, nuevoEstado: string) {
+    this.ventaSvc.actualizarEstadoEnvio(venta.id_venta, nuevoEstado).subscribe({
+      next: () => {
+        venta.estado_envio = nuevoEstado;
+        this.mostrarToast(`Pedido marcado como ${nuevoEstado}.`, 'success');
+      },
+      error: (err) => this.mostrarToast(err.error?.mensaje || 'Error.', 'danger')
     });
   }
 

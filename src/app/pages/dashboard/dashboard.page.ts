@@ -12,6 +12,8 @@ import { ReporteService } from '../../services/reporte';
 export class DashboardPage implements OnInit {
   nombre = '';
   rol    = '';
+  saludo = '';
+  fecha  = '';
 
   kpis: any = {
     ventas_hoy:     0,
@@ -30,7 +32,24 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
     this.nombre = localStorage.getItem('nombre') || '';
     this.rol    = localStorage.getItem('rol')    || '';
+    this.calcularSaludo();
+    this.calcularFecha();
     this.cargarKpis();
+  }
+
+  calcularSaludo() {
+    const hora = new Date().getHours();
+    if (hora < 12)      this.saludo = 'Buenos días';
+    else if (hora < 19)  this.saludo = 'Buenas tardes';
+    else                 this.saludo = 'Buenas noches';
+  }
+
+  calcularFecha() {
+    const opciones: Intl.DateTimeFormatOptions = {
+      weekday: 'long', day: 'numeric', month: 'long'
+    };
+    this.fecha = new Date().toLocaleDateString('es-ES', opciones);
+    this.fecha = this.fecha.charAt(0).toUpperCase() + this.fecha.slice(1);
   }
 
   cargarKpis() {

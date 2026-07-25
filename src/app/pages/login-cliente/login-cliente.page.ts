@@ -44,6 +44,8 @@ export class LoginClientePage implements OnInit {
         await loader.dismiss();
         localStorage.setItem('cliente_token',  res.datos.token);
         localStorage.setItem('cliente_nombre', res.datos.nombres + ' ' + res.datos.apellidos);
+        localStorage.setItem('cliente_id', res.datos.id_cliente);
+        localStorage.setItem('cliente_correo', res.datos.correo);
         this.router.navigate(['/tienda']);
       },
       error: async (err) => {
