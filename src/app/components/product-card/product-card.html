@@ -1,0 +1,41 @@
+<div class="pc-card" *ngIf="producto">
+
+  <div class="pc-image" role="button" tabindex="0" [attr.aria-label]="'Ver detalle de ' + producto.nombre"
+       (click)="abrir.emit()" (keydown.enter)="abrir.emit()" (keydown.space)="abrir.emit(); $event.preventDefault()">
+    <img *ngIf="producto.imagen_url" [src]="producto.imagen_url" (error)="onImgError($event)" class="pc-img" [attr.alt]="producto.nombre">
+    <ion-icon *ngIf="!producto.imagen_url" name="shirt-outline" aria-hidden="true" class="pc-placeholder-icon"></ion-icon>
+
+    <div *ngIf="tieneDescuento" class="pc-badge pc-badge-sale">-{{ porcentajeDescuento }}%</div>
+    <div *ngIf="esNuevo && !tieneDescuento" class="pc-badge pc-badge-new">NUEVO</div>
+
+    <div #favBtn class="pc-fav" [class.pc-fav-active]="modo === 'favoritos' || esFavorito"
+         role="button" tabindex="0"
+         [attr.aria-label]="(modo === 'favoritos' || esFavorito) ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+         (click)="onFavorito($event)" (keydown.enter)="onFavorito($event)" (keydown.space)="onFavorito($event); $event.preventDefault()">
+      <ion-icon [name]="(modo === 'favoritos' || esFavorito) ? 'heart' : 'heart-outline'" aria-hidden="true"></ion-icon>
+    </div>
+  </div>
+
+  <div class="pc-body">
+    <p class="pc-brand">{{ producto.marca || producto.categoria }}</p>
+    <p class="pc-name" (click)="abrir.emit()">{{ producto.nombre }}</p>
+
+    <div class="pc-rating" *ngIf="tieneResenas">
+      <ion-icon *ngFor="let n of estrellas" [name]="n <= calificacionRedondeada ? 'star' : 'star-outline'" aria-hidden="true"></ion-icon>
+      <span>{{ producto.calificacion_promedio }} ({{ producto.total_resenas }})</span>
+    </div>
+
+    <div class="pc-footer">
+      <div class="pc-price">
+        <span class="pc-price-current">${{ producto.precio_venta }}</span>
+        <span *ngIf="tieneDescuento" class="pc-price-original">${{ producto.precio_original }}</span>
+      </div>
+      <button #addBtn class="pc-add" [class.pc-add-done]="agregadoFeedback"
+              [attr.aria-label]="agregadoFeedback ? 'Producto agregado' : 'Agregar al carrito'"
+              (click)="onAgregar($event)">
+        <ion-icon [name]="agregadoFeedback ? 'checkmark-outline' : 'add-outline'" aria-hidden="true"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

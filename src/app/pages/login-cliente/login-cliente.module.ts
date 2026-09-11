@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { LoginClientePageRoutingModule } from './login-cliente-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 import { LoginClientePage } from './login-cliente.page';
 
 @NgModule({
@@ -12,6 +13,7 @@ import { LoginClientePage } from './login-cliente.page';
     FormsModule,
     IonicModule,
     RouterModule,
+    SharedUiModule,
     LoginClientePageRoutingModule
   ],
   declarations: [LoginClientePage]

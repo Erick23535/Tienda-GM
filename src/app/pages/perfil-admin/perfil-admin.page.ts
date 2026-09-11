@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { PerfilService } from '../../services/perfil';
 import { AuthService } from '../../services/auth';
 import { ConfiguracionService } from '../../services/configuracion';
@@ -28,14 +28,18 @@ export class PerfilAdminPage implements OnInit {
   passConfirmar = '';
   //banner
   bannerUrl = '';
+  ivaActivo = true;
+
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
 
   constructor(
   private perfilSvc: PerfilService,
   private authSvc:   AuthService,
   private configSvc: ConfiguracionService,
   private router:    Router,
-  private loading:   LoadingController,
-  private toast:     ToastController
+  private loading:   LoadingController
 ) {}
 
   ngOnInit() {
@@ -59,7 +63,10 @@ export class PerfilAdminPage implements OnInit {
   }
   cargarConfiguracion() {
   this.configSvc.obtener().subscribe({
-    next: (res) => this.bannerUrl = res.datos.banner_url || ''
+    next: (res) => {
+      this.bannerUrl = res.datos.banner_url || '';
+      this.ivaActivo = res.datos.iva_activo === undefined ? true : res.datos.iva_activo === '1';
+    }
   });
 }
 
@@ -74,6 +81,24 @@ async guardarBanner() {
     },
     error: async () => {
       await loader.dismiss();
+      this.mostrarToast('Error al guardar.', 'danger');
+    }
+  });
+}
+
+async toggleIva() {
+  this.ivaActivo = !this.ivaActivo;
+  const loader = await this.loading.create({ message: 'Guardando...' });
+  await loader.present();
+
+  this.configSvc.actualizar({ iva_activo: this.ivaActivo ? '1' : '0' }).subscribe({
+    next: async () => {
+      await loader.dismiss();
+      this.mostrarToast(this.ivaActivo ? 'IVA activado en la tienda.' : 'IVA desactivado en la tienda.', 'success');
+    },
+    error: async () => {
+      await loader.dismiss();
+      this.ivaActivo = !this.ivaActivo; // revertir si falla
       this.mostrarToast('Error al guardar.', 'danger');
     }
   });
@@ -156,8 +181,10 @@ async guardarBanner() {
     });
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
-    t.present();
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 2800);
   }
 }

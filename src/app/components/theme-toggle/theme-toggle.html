@@ -1,0 +1,12 @@
+<button
+  class="theme-toggle"
+  type="button"
+  (click)="themeSvc.alternar()"
+  [attr.aria-label]="themeSvc.tema === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+  style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--admin-border);background:var(--admin-surface);cursor:pointer;transition:background 0.2s,transform 0.15s;"
+>
+  <ion-icon
+    [name]="themeSvc.tema === 'dark' ? 'moon-outline' : 'sunny-outline'"
+    style="font-size:19px;color:var(--admin-gold);"
+  ></ion-icon>
+</button>

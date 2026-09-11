@@ -1,0 +1,143 @@
+<ion-split-pane [disabled]="sidebarColapsado" contentId="admin-main" when="md" style="--side-width:250px; --border:none;">
+
+  <!-- ===== SIDEBAR ===== -->
+  <ion-menu menuId="admin-sidebar" contentId="admin-main" type="overlay" style="--background:var(--admin-bg-elevated);">
+    <ion-content style="--background:var(--admin-bg-elevated); --padding-top:8px;" scroll-y="false">
+      <div style="display:flex; flex-direction:column; height:100%;">
+
+        <!-- Marca -->
+        <div style="display:flex; align-items:center; gap:12px; padding:16px 20px 20px;">
+          <div style="width:38px; height:38px; background:linear-gradient(135deg,var(--admin-gold),var(--admin-gold-light)); border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon name="shirt-outline" style="font-size:19px; color:var(--admin-ink);"></ion-icon>
+          </div>
+          <div>
+            <p style="font-size:10px; color:var(--admin-text-faint); margin:0; letter-spacing:1px; text-transform:uppercase;">Tienda GM</p>
+            <p style="font-size:14px; font-weight:700; color:var(--admin-text); margin:0;">Panel Admin</p>
+          </div>
+        </div>
+
+        <!-- Navegación, en orden de uso -->
+        <div style="flex:1; overflow-y:auto; padding:0 12px;">
+          <a *ngFor="let m of modulos" [routerLink]="m.ruta" routerLinkActive="admin-nav-activo"
+             #rla="routerLinkActive"
+             style="display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--admin-radius-sm); text-decoration:none; margin-bottom:2px;"
+             [style.background]="rla.isActive ? 'var(--admin-gold-dim)' : 'transparent'">
+            <ion-icon [name]="m.icono"
+                      [style.color]="rla.isActive ? 'var(--admin-gold)' : 'var(--admin-text-faint)'"
+                      style="font-size:18px;"></ion-icon>
+            <span [style.color]="rla.isActive ? 'var(--admin-gold)' : 'var(--admin-text-dim)'"
+                  [style.font-weight]="rla.isActive ? '700' : '500'"
+                  style="font-size:13.5px;">{{ m.etiqueta }}</span>
+          </a>
+        </div>
+
+        <!-- Pie: perfil + salir -->
+        <div style="padding:12px; border-top:1px solid var(--admin-border);">
+          <a routerLink="/perfil-admin" routerLinkActive="admin-nav-activo" #rlaPerfil="routerLinkActive"
+             style="display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--admin-radius-sm); text-decoration:none; margin-bottom:2px;"
+             [style.background]="rlaPerfil.isActive ? 'var(--admin-gold-dim)' : 'transparent'">
+            <ion-icon name="person-outline" [style.color]="rlaPerfil.isActive ? 'var(--admin-gold)' : 'var(--admin-text-faint)'" style="font-size:18px;"></ion-icon>
+            <span [style.color]="rlaPerfil.isActive ? 'var(--admin-gold)' : 'var(--admin-text-dim)'" style="font-size:13.5px;">Mi perfil</span>
+          </a>
+          <a (click)="cerrarSesion()"
+             style="display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--admin-radius-sm); text-decoration:none; cursor:pointer;">
+            <ion-icon name="log-out-outline" style="font-size:18px; color:var(--admin-text-faint);"></ion-icon>
+            <span style="font-size:13.5px; color:var(--admin-text-dim);">Salir</span>
+          </a>
+        </div>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <!-- ===== CONTENIDO ===== -->
+  <div class="ion-page" id="admin-main" style="background:var(--admin-bg);">
+
+    <!-- Topbar -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px; border-bottom:1px solid var(--admin-border); background:var(--admin-bg-elevated);">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div (click)="alternarSidebar()" (keydown.enter)="alternarSidebar()" (keydown.space)="alternarSidebar(); $event.preventDefault()"
+             role="button" tabindex="0" aria-label="Mostrar u ocultar el menú"
+             style="width:34px; height:34px; background:var(--admin-surface); border:1px solid var(--admin-border); border-radius:var(--admin-radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;">
+          <ion-icon name="menu-outline" aria-hidden="true" style="font-size:18px; color:var(--admin-text);"></ion-icon>
+        </div>
+        <p style="font-size:14px; font-weight:700; color:var(--admin-text); margin:0;">{{ nombre }}</p>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div (click)="abrirNotificaciones()" (keydown.enter)="abrirNotificaciones()" (keydown.space)="abrirNotificaciones(); $event.preventDefault()"
+             role="button" tabindex="0" [attr.aria-label]="'Notificaciones' + (totalNoLeidas > 0 ? ', ' + totalNoLeidas + ' sin leer' : '')"
+             style="position:relative; width:38px; height:38px; background:var(--admin-surface); border:1px solid var(--admin-border-gold); border-radius:var(--admin-radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="notifications-outline" aria-hidden="true" style="font-size:18px; color:var(--admin-gold);"></ion-icon>
+          <div *ngIf="totalNoLeidas > 0" aria-hidden="true"
+               style="position:absolute; top:-6px; right:-6px; width:17px; height:17px; background:var(--admin-danger); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <span style="font-size:9px; font-weight:700; color:var(--admin-text);">{{ totalNoLeidas > 9 ? '9+' : totalNoLeidas }}</span>
+          </div>
+        </div>
+        <div (click)="irAPerfil()" (keydown.enter)="irAPerfil()" (keydown.space)="irAPerfil(); $event.preventDefault()"
+             role="button" tabindex="0" aria-label="Mi perfil"
+             style="width:38px; height:38px; background:var(--admin-surface); border:1px solid var(--admin-border-gold); border-radius:var(--admin-radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="person-outline" aria-hidden="true" style="font-size:17px; color:var(--admin-gold);"></ion-icon>
+        </div>
+        <div (click)="cerrarSesion()" (keydown.enter)="cerrarSesion()" (keydown.space)="cerrarSesion(); $event.preventDefault()"
+             role="button" tabindex="0" aria-label="Cerrar sesión"
+             style="width:38px; height:38px; background:var(--admin-surface); border:1px solid var(--admin-border); border-radius:var(--admin-radius-sm); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <ion-icon name="log-out-outline" aria-hidden="true" style="font-size:18px; color:var(--admin-text-faint);"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative; flex:1; overflow:hidden;">
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+  </div>
+
+  <!-- ===== MODAL NOTIFICACIONES ===== -->
+  <div *ngIf="modoNotificaciones"
+       (click)="cerrarNotificaciones()"
+       style="position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; padding:16px; padding-top:70px;">
+
+    <div (click)="$event.stopPropagation()"
+         style="width:100%; max-width:420px; max-height:75vh; background:var(--admin-bg-elevated); border-radius:var(--admin-radius-lg); overflow:hidden; display:flex; flex-direction:column; border:1px solid var(--admin-border-gold); box-shadow:0 24px 70px rgba(0,0,0,0.5);">
+
+      <div style="padding:18px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--admin-border);">
+        <p style="font-size:16px; font-weight:700; color:var(--admin-text); margin:0;">Notificaciones</p>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span *ngIf="totalNoLeidas > 0" (click)="marcarTodasLeidas()"
+                style="font-size:12px; color:var(--admin-gold); font-weight:600; cursor:pointer;">Marcar leídas</span>
+          <div (click)="cerrarNotificaciones()"
+               style="width:28px; height:28px; background:var(--admin-surface); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="close-outline" style="font-size:16px; color:var(--admin-text);"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div style="overflow-y:auto; flex:1;">
+        <div *ngIf="notificaciones.length === 0" style="text-align:center; padding:48px 20px;">
+          <ion-icon name="notifications-off-outline" style="font-size:40px; color:var(--admin-gold-dim);"></ion-icon>
+          <p style="color:var(--admin-text-ghost); margin-top:10px; font-size:13px;">No tienes notificaciones.</p>
+        </div>
+
+        <div *ngFor="let n of notificaciones"
+             (click)="abrirNotificacion(n)"
+             [style.background]="n.leida ? 'transparent' : 'var(--admin-gold-dim)'"
+             style="display:flex; gap:12px; padding:14px 20px; border-bottom:1px solid var(--admin-border); cursor:pointer;">
+          <div [style.background]="n.tipo === 'confirmacion' ? 'rgba(34,197,94,0.1)' : n.tipo === 'stock_bajo' ? 'rgba(239,68,68,0.1)' : 'var(--admin-gold-dim)'"
+               style="width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <ion-icon [name]="iconoNotificacion(n.tipo)"
+                      [style.color]="n.tipo === 'confirmacion' ? 'var(--admin-success)' : n.tipo === 'stock_bajo' ? 'var(--admin-danger)' : 'var(--admin-gold)'"
+                      style="font-size:18px;"></ion-icon>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <p style="font-size:13px; font-weight:700; color:var(--admin-text); margin:0; flex:1;">{{ n.titulo }}</p>
+              <div *ngIf="!n.leida" style="width:7px; height:7px; background:var(--admin-gold); border-radius:50%; flex-shrink:0;"></div>
+            </div>
+            <p style="font-size:12px; color:var(--admin-text-dim); margin:4px 0 6px; line-height:1.4;">{{ n.mensaje }}</p>
+            <p style="font-size:10px; color:var(--admin-text-ghost); margin:0;">{{ tiempoRelativo(n.fecha_creacion) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-split-pane>

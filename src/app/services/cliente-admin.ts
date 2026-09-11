@@ -1,41 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ClienteAdminService {
 
-  private API = 'http://localhost/tienda-gm-api';
+  private API = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  private headers() {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({ Authorization: `Bearer ${token}` });
-  }
-
   listar(busqueda = '') {
     const params = busqueda ? `?busqueda=${busqueda}` : '';
-    return this.http.get<any>(`${this.API}/admin/clientes${params}`,
-      { headers: this.headers() });
+    return this.http.get<any>(`${this.API}/admin/clientes${params}`);
   }
 
   obtener(id: number) {
-    return this.http.get<any>(`${this.API}/admin/clientes/${id}`,
-      { headers: this.headers() });
+    return this.http.get<any>(`${this.API}/admin/clientes/${id}`);
   }
 
   toggleActivo(id: number) {
-    return this.http.put<any>(`${this.API}/admin/clientes/${id}/activar`, {},
-      { headers: this.headers() });
+    return this.http.put<any>(`${this.API}/admin/clientes/${id}/activar`, {});
   }
 
   eliminar(id: number) {
-    return this.http.delete<any>(`${this.API}/admin/clientes/${id}`,
-      { headers: this.headers() });
+    return this.http.delete<any>(`${this.API}/admin/clientes/${id}`);
   }
 
   stats() {
-    return this.http.get<any>(`${this.API}/admin/clientes/stats`,
-      { headers: this.headers() });
+    return this.http.get<any>(`${this.API}/admin/clientes/stats`);
   }
 }

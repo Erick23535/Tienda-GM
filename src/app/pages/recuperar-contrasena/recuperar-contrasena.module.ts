@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { RecuperarContrasenaPageRoutingModule } from './recuperar-contrasena-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { RecuperarContrasenaPage } from './recuperar-contrasena.page';
 
@@ -13,6 +14,7 @@ import { RecuperarContrasenaPage } from './recuperar-contrasena.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     RecuperarContrasenaPageRoutingModule
   ],
   declarations: [RecuperarContrasenaPage]

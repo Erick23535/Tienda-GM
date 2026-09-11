@@ -33,6 +33,128 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+@import "@ionic/angular/css/palettes/dark.class.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+/**
+ * Tokens del panel admin
+ * -----------------------------------------------------
+ * Formaliza la paleta oscura/dorada que ya se usaba repetida a mano
+ * (hex/rgba) en cada página. Nuevos componentes y el shell de admin
+ * deben usar estas variables en vez de hardcodear colores.
+ */
+:root {
+  --admin-bg: #0a0a0a;
+  --admin-bg-elevated: #141414;
+  --admin-surface: rgba(255, 255, 255, 0.04);
+  --admin-surface-hover: rgba(255, 255, 255, 0.07);
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-gold: rgba(212, 175, 55, 0.2);
+
+  --admin-gold: #d4af37;
+  --admin-gold-light: #f5d76e;
+  --admin-gold-dim: rgba(212, 175, 55, 0.12);
+
+  --admin-text: #ffffff;
+  --admin-text-dim: rgba(255, 255, 255, 0.6);
+  --admin-text-faint: rgba(255, 255, 255, 0.4);
+  --admin-text-ghost: rgba(255, 255, 255, 0.25);
+
+  --admin-success: #22c55e;
+  --admin-success-light: #4ade80;
+  --admin-danger: #ef4444;
+  --admin-danger-light: #f87171;
+  --admin-info: #38bdf8;
+  --admin-info-light: #7dd3fc;
+  --admin-purple: #a78bfa;
+  --admin-purple-dark: #7c3aed;
+
+  --admin-radius-lg: 20px;
+  --admin-radius-md: 16px;
+  --admin-radius-sm: 12px;
+
+  /* Triplete RGB usado por los rgba(var(--fg-rgb),X) esparcidos en las
+     páginas: mismo alpha por ocurrencia, solo cambia el color base según
+     el tema. */
+  --fg-rgb: 255, 255, 255;
+
+  /* Texto/ícono oscuro para usar SOBRE superficies doradas o claras
+     (botones, badges, avatares con fondo --admin-gold). A diferencia de
+     --admin-bg, este NO cambia con el tema: el dorado se ve igual en
+     claro y oscuro, así que el texto que contrasta con él también debe
+     quedarse fijo. No redefinir dentro de [data-theme="light"]. */
+  --admin-ink: #0a0a0a;
+
+  /* Alias de marca: mismos valores, para usarlos fuera del panel admin
+     (tienda del cliente, login) sin atarlos semánticamente a "admin". */
+  --brand-bg: var(--admin-bg);
+  --brand-bg-elevated: var(--admin-bg-elevated);
+  --brand-surface: var(--admin-surface);
+  --brand-surface-hover: var(--admin-surface-hover);
+  --brand-border: var(--admin-border);
+  --brand-border-gold: var(--admin-border-gold);
+  --brand-gold: var(--admin-gold);
+  --brand-gold-light: var(--admin-gold-light);
+  --brand-gold-dim: var(--admin-gold-dim);
+  --brand-text: var(--admin-text);
+  --brand-text-dim: var(--admin-text-dim);
+  --brand-text-faint: var(--admin-text-faint);
+  --brand-text-ghost: var(--admin-text-ghost);
+  --brand-success: var(--admin-success);
+  --brand-success-light: var(--admin-success-light);
+  --brand-danger: var(--admin-danger);
+  --brand-danger-light: var(--admin-danger-light);
+  --brand-info: var(--admin-info);
+  --brand-info-light: var(--admin-info-light);
+  --brand-purple: var(--admin-purple);
+  --brand-purple-dark: var(--admin-purple-dark);
+  --brand-radius-lg: var(--admin-radius-lg);
+  --brand-radius-md: var(--admin-radius-md);
+  --brand-radius-sm: var(--admin-radius-sm);
+  --brand-ink: var(--admin-ink);
+}
+
+/**
+ * Tema claro
+ * -----------------------------------------------------
+ * Se activa con [data-theme="light"] en <html> (ThemeService).
+ * Solo se redefinen fondos/texto/superficies: los acentos (dorado,
+ * éxito, peligro, info, morado) y los radios se mantienen iguales en
+ * ambos temas para conservar la identidad de marca.
+ */
+:root[data-theme="light"] {
+  --admin-bg: #f7f5f0;
+  --admin-bg-elevated: #ffffff;
+  --admin-surface: rgba(10, 10, 10, 0.04);
+  --admin-surface-hover: rgba(10, 10, 10, 0.07);
+  --admin-border: rgba(10, 10, 10, 0.08);
+  --admin-border-gold: rgba(212, 175, 55, 0.35);
+
+  --admin-text: #14120c;
+  --admin-text-dim: rgba(20, 18, 12, 0.65);
+  --admin-text-faint: rgba(20, 18, 12, 0.45);
+  --admin-text-ghost: rgba(20, 18, 12, 0.28);
+
+  --fg-rgb: 10, 10, 10;
+}
+
+/**
+ * Foco visible (accesibilidad)
+ * -----------------------------------------------------
+ * La app usa muchos <div (click)> como controles interactivos en vez de
+ * <button> nativos; sin esto, navegar con teclado (Tab) no muestra ningún
+ * indicador de qué elemento tiene el foco. Se aplica a botones/enlaces
+ * nativos y a cualquier elemento marcado a mano como role="button".
+ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--admin-gold, #d4af37);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 

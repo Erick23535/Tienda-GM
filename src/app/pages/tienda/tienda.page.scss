@@ -1,0 +1,305 @@
+// ===== Animaciones de entrada =====
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stagger-item {
+  animation: fade-in-up 0.4s ease both;
+}
+
+// Entrada del hero: estado inicial en CSS, la secuencia la anima
+// anime.js en TiendaPage.ngAfterViewInit (ver animarHero()).
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+// Entrada de las tarjetas de producto (destacados/catálogo/favoritos):
+// estado inicial en CSS, animadas en cascada por anime.js
+// (ver TiendaPage.animarTarjetasProducto()).
+.pc-anime-init {
+  display: block;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+// ===== Hero (inicio) =====
+.hero {
+  border-radius: 24px;
+  padding: 32px 24px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--brand-border-gold);
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform 0.2s ease-out;
+}
+
+.hero-blob-gold {
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent 70%);
+}
+
+.hero-blob-purple {
+  bottom: -60px;
+  left: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent 70%);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius:var(--admin-radius-lg);
+  padding: 4px 12px;
+  margin-bottom: 16px;
+  position: relative;
+
+  span {
+    font-size: 11px;
+    color: var(--brand-success-light);
+    font-weight: 600;
+  }
+}
+
+.hero-badge-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--brand-success);
+  border-radius: 50%;
+  animation: hero-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(1.4); }
+}
+
+.hero-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--brand-text);
+  margin: 0 0 12px;
+  line-height: 1.15;
+  position: relative;
+}
+
+.hero-title-gradient {
+  background: linear-gradient(135deg, var(--brand-gold), var(--brand-purple));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-copy {
+  font-size: 13px;
+  color: var(--brand-text-dim);
+  margin: 0 0 20px;
+  max-width: 260px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.hero-btn-primary {
+  background: #fff;
+  border: none;
+  border-radius:var(--admin-radius-sm);
+  padding: 12px 20px;
+  color: var(--admin-bg);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover { box-shadow: 0 8px 20px rgba(var(--fg-rgb), 0.15); }
+  &:active { transform: scale(0.96); }
+}
+
+.hero-btn-outline {
+  background: transparent;
+  border: 1px solid rgba(var(--fg-rgb), 0.2);
+  border-radius:var(--admin-radius-sm);
+  padding: 12px 20px;
+  color: var(--brand-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+
+  &:hover { border-color: var(--brand-gold); }
+  &:active { transform: scale(0.96); }
+}
+
+.hero-stats {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(var(--fg-rgb), 0.08);
+  position: relative;
+}
+
+.hero-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--brand-text);
+  margin: 0;
+}
+
+.hero-stat-label {
+  font-size: 10px;
+  color: var(--brand-text-faint);
+  margin: 0;
+}
+
+// ===== Trust badges / category tiles =====
+.trust-badge {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+
+  &:active {
+    transform: scale(0.96);
+    border-color: var(--brand-border-gold);
+  }
+}
+
+.category-tile {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ===== Timeline de seguimiento de pedido =====
+.order-timeline {
+  background: rgba(var(--fg-rgb), 0.03);
+  border-radius:var(--admin-radius-sm);
+  padding: 14px 14px 6px;
+  margin-bottom: 8px;
+}
+
+.order-step {
+  display: flex;
+  gap: 12px;
+}
+
+.order-step-line-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.order-step-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(var(--fg-rgb), 0.06);
+  border: 1px solid rgba(var(--fg-rgb), 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s ease, border-color 0.3s ease;
+
+  ion-icon {
+    font-size: 13px;
+    color: var(--brand-text-faint);
+  }
+}
+
+.order-step-dot-done {
+  background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+  border-color: transparent;
+
+  ion-icon { color: var(--admin-bg); }
+}
+
+.order-step-line {
+  width: 2px;
+  flex: 1;
+  min-height: 22px;
+  background: rgba(var(--fg-rgb), 0.1);
+  margin: 2px 0;
+  transition: background 0.3s ease;
+}
+
+.order-step-line-done {
+  background: var(--brand-gold);
+}
+
+.order-step-body {
+  padding-bottom: 18px;
+}
+
+.order-step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-text-faint);
+  margin: 4px 0 2px;
+  transition: color 0.3s ease;
+}
+
+.order-step-title-done {
+  color: var(--brand-text);
+  font-weight: 700;
+}
+
+.order-step-current {
+  font-size: 10px;
+  color: var(--brand-gold);
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// ===== Utilidades transversales =====
+// Feedback de presión para botones/CTAs con estilos inline (mantiene el
+// markup existente, solo agrega el estado :active vía clase).
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Filas de listas (carrito, notificaciones, pedidos) con hover/press sutil.
+.row-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--brand-border-gold);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ComprasPageRoutingModule } from './compras-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 import { ComprasPage } from './compras.page';
 
 @NgModule({
@@ -12,6 +13,7 @@ import { ComprasPage } from './compras.page';
     FormsModule,
     IonicModule,
     RouterModule,
+    SharedUiModule,
     ComprasPageRoutingModule
   ],
   declarations: [ComprasPage]

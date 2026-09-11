@@ -1,0 +1,192 @@
+:host {
+  display: block;
+}
+
+.pc-card {
+  background: var(--brand-bg-elevated);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--brand-radius-md);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.pc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+  border-color: var(--brand-border-gold);
+}
+
+.pc-image {
+  width: 100%;
+  height: 200px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.pc-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.pc-card:hover .pc-img {
+  transform: scale(1.08);
+}
+
+.pc-placeholder-icon {
+  font-size: 44px;
+  color: var(--brand-gold-dim);
+}
+
+.pc-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  color:var(--admin-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pc-badge-sale { background: var(--brand-danger); }
+.pc-badge-new  { background: linear-gradient(135deg, var(--brand-purple-dark), var(--brand-purple)); letter-spacing: 0.5px; font-size: 10px; }
+
+.pc-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  ion-icon {
+    font-size: 15px;
+    color:var(--admin-text);
+    transition: color 0.2s ease;
+  }
+
+  &:active {
+    transform: scale(0.85);
+  }
+}
+
+.pc-fav-active {
+  ion-icon {
+    color: var(--brand-danger);
+  }
+}
+
+.pc-body {
+  padding: 12px 12px 14px;
+}
+
+.pc-brand {
+  font-size: 10px;
+  color: var(--brand-text-faint);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-text);
+  margin: 0 0 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: -4px 0 8px;
+
+  ion-icon {
+    font-size: 11px;
+    color: var(--brand-gold);
+  }
+
+  span {
+    font-size: 11px;
+    color: var(--brand-text-faint);
+    margin-left: 4px;
+  }
+}
+
+.pc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.pc-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pc-price-current {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--brand-gold);
+  white-space: nowrap;
+}
+
+.pc-price-original {
+  font-size: 12px;
+  color: var(--brand-text-ghost);
+  text-decoration: line-through;
+  white-space: nowrap;
+}
+
+.pc-add {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--brand-gold), var(--brand-gold-light));
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--admin-bg);
+  }
+
+  &:active {
+    transform: scale(0.88);
+  }
+}
+
+.pc-add-done {
+  background: linear-gradient(135deg, var(--brand-success), var(--brand-success-light));
+}

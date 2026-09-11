@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
-import { LoadingController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -13,41 +12,38 @@ export class LoginPage {
   correo     = '';
   contrasena = '';
 
+  mostrarPass = false;
+  cargando    = false;
+  errorMsg    = '';
+
   constructor(
-    private auth:    AuthService,
-    private router:  Router,
-    private loading: LoadingController,
-    private toast:   ToastController
+    private auth:   AuthService,
+    private router: Router
   ) {}
 
-  async iniciarSesion() {
+  togglePass() {
+    this.mostrarPass = !this.mostrarPass;
+  }
+
+  iniciarSesion() {
+    this.errorMsg = '';
+
     if (!this.correo || !this.contrasena) {
-      this.mostrarToast('Completa todos los campos.', 'warning');
+      this.errorMsg = 'Ingresa tu correo y contraseña.';
       return;
     }
 
-    const loader = await this.loading.create({ message: 'Ingresando...' });
-    await loader.present();
+    this.cargando = true;
 
     this.auth.login(this.correo, this.contrasena).subscribe({
-      next: async () => {
-        await loader.dismiss();
+      next: () => {
+        this.cargando = false;
         this.router.navigate(['/dashboard']);
       },
-      error: async (err) => {
-        await loader.dismiss();
-        const msg = err.error?.mensaje || 'Error al iniciar sesión.';
-        this.mostrarToast(msg, 'danger');
+      error: (err) => {
+        this.cargando = false;
+        this.errorMsg = err.error?.mensaje || 'No pudimos iniciar sesión.';
       }
     });
-  }
-
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({
-      message: mensaje,
-      duration: 3000,
-      color
-    });
-    t.present();
   }
 }

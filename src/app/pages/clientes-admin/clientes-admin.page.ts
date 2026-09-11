@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { ClienteAdminService } from '../../services/cliente-admin';
 
 @Component({
@@ -13,13 +13,17 @@ export class ClientesAdminPage implements OnInit {
   clientes:  any[] = [];
   stats:     any   = {};
   busqueda = '';
+  vistaGrid = true;
   clienteDetalle: any = null;
+  modoConfirmarToggle = false;
+  modoConfirmarEliminar = false;
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
 
   constructor(
     private clienteSvc: ClienteAdminService,
-    private alert:      AlertController,
-    private loading:    LoadingController,
-    private toast:      ToastController
+    private loading:    LoadingController
   ) {}
 
   ngOnInit() {
@@ -62,62 +66,55 @@ export class ClientesAdminPage implements OnInit {
     this.clienteDetalle = null;
   }
 
-  async toggleActivo(cliente: any) {
-    const accion = cliente.activo ? 'desactivar' : 'activar';
-    const alerta = await this.alert.create({
-      header:  `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} cliente?`,
-      message: `¿Estás seguro de ${accion} a ${cliente.nombres} ${cliente.apellidos}?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: accion.charAt(0).toUpperCase() + accion.slice(1),
-          handler: () => {
-            this.clienteSvc.toggleActivo(cliente.id_cliente).subscribe({
-              next: (res) => {
-                cliente.activo = res.datos.activo;
-                this.mostrarToast(res.mensaje, 'success');
-                this.cargarStats();
-                if (this.clienteDetalle) {
-                  this.clienteDetalle.activo = res.datos.activo;
-                }
-              },
-              error: () => this.mostrarToast('Error al actualizar.', 'danger')
-            });
-          }
-        }
-      ]
-    });
-    await alerta.present();
+  toggleActivo(cliente: any) {
+    this.modoConfirmarToggle = true;
   }
 
-  async confirmarEliminar(cliente: any) {
-    const alerta = await this.alert.create({
-      header:  'Eliminar cliente',
-      message: `¿Eliminar a ${cliente.nombres} ${cliente.apellidos}? Esta acción no se puede deshacer.`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar',
-          role: 'destructive',
-          handler: () => {
-            this.clienteSvc.eliminar(cliente.id_cliente).subscribe({
-              next: () => {
-                this.mostrarToast('Cliente eliminado.', 'success');
-                this.cerrarDetalle();
-                this.cargarClientes();
-                this.cargarStats();
-              },
-              error: (err) => this.mostrarToast(err.error?.mensaje || 'Error al eliminar.', 'danger')
-            });
-          }
-        }
-      ]
-    });
-    await alerta.present();
+  cancelarToggle() {
+    this.modoConfirmarToggle = false;
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
-    t.present();
+  confirmarToggleActivo() {
+    const cliente = this.clienteDetalle;
+    this.modoConfirmarToggle = false;
+    this.clienteSvc.toggleActivo(cliente.id_cliente).subscribe({
+      next: (res) => {
+        cliente.activo = res.datos.activo;
+        this.mostrarToast(res.mensaje, 'success');
+        this.cargarStats();
+        const enLista = this.clientes.find(c => c.id_cliente === cliente.id_cliente);
+        if (enLista) enLista.activo = res.datos.activo;
+      },
+      error: () => this.mostrarToast('Error al actualizar.', 'danger')
+    });
+  }
+
+  confirmarEliminar(cliente: any) {
+    this.modoConfirmarEliminar = true;
+  }
+
+  cancelarEliminar() {
+    this.modoConfirmarEliminar = false;
+  }
+
+  eliminarConfirmado() {
+    const cliente = this.clienteDetalle;
+    this.modoConfirmarEliminar = false;
+    this.clienteSvc.eliminar(cliente.id_cliente).subscribe({
+      next: () => {
+        this.mostrarToast('Cliente eliminado.', 'success');
+        this.cerrarDetalle();
+        this.cargarClientes();
+        this.cargarStats();
+      },
+      error: (err) => this.mostrarToast(err.error?.mensaje || 'Error al eliminar.', 'danger')
+    });
+  }
+
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 2800);
   }
 }

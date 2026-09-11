@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { RegistroClientePageRoutingModule } from './registro-cliente-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { RegistroClientePage } from './registro-cliente.page';
 
@@ -13,6 +14,7 @@ import { RegistroClientePage } from './registro-cliente.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     RegistroClientePageRoutingModule
   ],
   declarations: [RegistroClientePage]

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { CategoriaAdminService } from '../../services/categoria-admin';
 
 @Component({
@@ -12,15 +12,20 @@ export class CategoriasPage implements OnInit {
 
   categorias:     any[] = [];
   busqueda = '';
+  vistaGrid = true;
   modoFormulario = false;
   editando       = false;
   actual:        any = {};
+  aEliminar:     any = null;
+  modoExito = false;
+  mensajeExito = '';
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
 
   constructor(
     private svc:     CategoriaAdminService,
-    private alert:   AlertController,
-    private loading: LoadingController,
-    private toast:   ToastController
+    private loading: LoadingController
   ) {}
 
   ngOnInit() { this.cargar(); }
@@ -80,9 +85,11 @@ export class CategoriasPage implements OnInit {
     accion.subscribe({
       next: async () => {
         await loader.dismiss();
-        this.mostrarToast(this.editando ? 'Categoría actualizada.' : 'Categoría creada.', 'success');
+        this.mensajeExito = this.editando ? 'Categoría actualizada' : 'Categoría creada';
+        this.modoExito = true;
         this.cerrarFormulario();
         this.cargar();
+        setTimeout(() => this.modoExito = false, 2000);
       },
       error: async (err) => {
         await loader.dismiss();
@@ -91,28 +98,57 @@ export class CategoriasPage implements OnInit {
     });
   }
 
-  async confirmarEliminar(item: any) {
-    const alerta = await this.alert.create({
-      header:  'Eliminar categoría',
-      message: `¿Eliminar "${item.nombre}"?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Eliminar', role: 'destructive',
-          handler: () => {
-            this.svc.eliminar(item.id_categoria).subscribe({
-              next: () => { this.mostrarToast('Eliminada.', 'success'); this.cargar(); },
-              error: (err) => this.mostrarToast(err.error?.mensaje || 'Error.', 'danger')
-            });
-          }
-        }
-      ]
-    });
-    await alerta.present();
+  confirmarEliminar(item: any) {
+    this.aEliminar = item;
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
-    t.present();
+  cancelarEliminar() {
+    this.aEliminar = null;
+  }
+
+  // Eliminar con ventana para deshacer: se quita de la vista de inmediato,
+  // pero el borrado real en el servidor solo ocurre si nadie lo deshace
+  // dentro de los siguientes segundos (además del modal de confirmación,
+  // no en su lugar).
+  pendienteEliminar: any = null;
+  private pendienteTimeoutId: any;
+
+  eliminarConfirmado() {
+    const item = this.aEliminar;
+    this.aEliminar = null;
+
+    this.categorias = this.categorias.filter(c => c.id_categoria !== item.id_categoria);
+    this.pendienteEliminar = item;
+
+    this.pendienteTimeoutId = setTimeout(() => this.eliminarDefinitivo(item), 5000);
+  }
+
+  deshacerEliminar() {
+    if (!this.pendienteEliminar) return;
+    clearTimeout(this.pendienteTimeoutId);
+    this.categorias = [this.pendienteEliminar, ...this.categorias];
+    this.pendienteEliminar = null;
+  }
+
+  private eliminarDefinitivo(item: any) {
+    this.pendienteEliminar = null;
+    this.svc.eliminar(item.id_categoria).subscribe({
+      next: () => {
+        this.mensajeExito = 'Categoría eliminada';
+        this.modoExito = true;
+        setTimeout(() => this.modoExito = false, 2000);
+      },
+      error: (err) => {
+        this.cargar();
+        this.mostrarToast(err.error?.mensaje || 'Error al eliminar.', 'danger');
+      }
+    });
+  }
+
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 2800);
   }
 }

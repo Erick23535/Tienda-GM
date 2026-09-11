@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { ProveedoresPageRoutingModule } from './proveedores-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { ProveedoresPage } from './proveedores.page';
 
@@ -13,6 +14,7 @@ import { ProveedoresPage } from './proveedores.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     ProveedoresPageRoutingModule
   ],
   declarations: [ProveedoresPage]

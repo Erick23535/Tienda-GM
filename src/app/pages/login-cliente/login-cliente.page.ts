@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
 import { ClienteService } from '../../services/cliente';
 
 @Component({
@@ -14,12 +13,18 @@ export class LoginClientePage implements OnInit {
   correo     = '';
   contrasena = '';
 
+  mostrarPass = false;
+  cargando    = false;
+  errorMsg    = '';
+
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
+
   constructor(
     private clienteSvc: ClienteService,
     private router:     Router,
-    private route:      ActivatedRoute,
-    private loading:    LoadingController,
-    private toast:      ToastController
+    private route:      ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -30,33 +35,40 @@ export class LoginClientePage implements OnInit {
     });
   }
 
-  async iniciarSesion() {
+  togglePass() {
+    this.mostrarPass = !this.mostrarPass;
+  }
+
+  iniciarSesion() {
+    this.errorMsg = '';
+
     if (!this.correo || !this.contrasena) {
-      this.mostrarToast('Completa todos los campos.', 'warning');
+      this.errorMsg = 'Ingresa tu correo y contraseña.';
       return;
     }
 
-    const loader = await this.loading.create({ message: 'Ingresando...' });
-    await loader.present();
+    this.cargando = true;
 
     this.clienteSvc.login(this.correo, this.contrasena).subscribe({
-      next: async (res) => {
-        await loader.dismiss();
+      next: (res) => {
+        this.cargando = false;
         localStorage.setItem('cliente_token',  res.datos.token);
         localStorage.setItem('cliente_nombre', res.datos.nombres + ' ' + res.datos.apellidos);
         localStorage.setItem('cliente_id', res.datos.id_cliente);
         localStorage.setItem('cliente_correo', res.datos.correo);
         this.router.navigate(['/tienda']);
       },
-      error: async (err) => {
-        await loader.dismiss();
-        this.mostrarToast(err.error?.mensaje || 'Error al iniciar sesión.', 'danger');
+      error: (err) => {
+        this.cargando = false;
+        this.errorMsg = err.error?.mensaje || 'No pudimos iniciar sesión.';
       }
     });
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 4000, color });
-    t.present();
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 3200);
   }
 }

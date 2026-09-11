@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { ProductoService } from '../../services/producto';
+import { ProveedorAdminService } from '../../services/proveedor-admin';
 
 @Component({
   selector: 'app-productos',
@@ -18,18 +19,36 @@ export class ProductosPage implements OnInit {
   modoFormulario = false;
   editando       = false;
   productoActual: any = {};
+  usaTallas = false;
+  tallasProducto: any[] = [];
+  proveedores: any[] = [];
+  modoSeleccionProveedor = false;
+  busquedaProveedor = '';
+
+  modoSeleccionCategoria = false;
+  busquedaCategoria = '';
+
+  modoExito = false;
+  mensajeExito = '';
+
+  modoConfirmarEliminar = false;
+  productoSeleccionado: any = null;
+
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
 
   constructor(
-    private productoSvc: ProductoService,
-    private alert:       AlertController,
-    private loading:     LoadingController,
-    private toast:       ToastController
-  ) {}
+  private productoSvc: ProductoService,
+  private proveedorSvc: ProveedorAdminService,
+  private loading:     LoadingController
+) {}
 
   ngOnInit() {
-    this.cargarProductos();
-    this.cargarCategorias();
-  }
+  this.cargarProductos();
+  this.cargarCategorias();
+  this.cargarProveedores();
+}
 
   async cargarProductos() {
     const loader = await this.loading.create({ message: 'Cargando...' });
@@ -46,6 +65,14 @@ export class ProductosPage implements OnInit {
     });
   }
 
+  cargarProveedores() {
+  this.proveedorSvc.listar().subscribe({
+    next: (res) => this.proveedores = res.datos
+  });
+}
+
+  orden = 'nombre-asc';
+
   get productosFiltrados() {
     let lista = this.productos;
     if (this.categoriaFiltro !== 'todas') {
@@ -57,6 +84,16 @@ export class ProductosPage implements OnInit {
         p.nombre.toLowerCase().includes(b) ||
         p.codigo.toLowerCase().includes(b)
       );
+    }
+
+    lista = [...lista];
+    switch (this.orden) {
+      case 'nombre-desc': lista.sort((a, b) => b.nombre.localeCompare(a.nombre)); break;
+      case 'stock-asc':   lista.sort((a, b) => a.stock_actual - b.stock_actual); break;
+      case 'stock-desc':  lista.sort((a, b) => b.stock_actual - a.stock_actual); break;
+      case 'precio-asc':  lista.sort((a, b) => a.precio_venta - b.precio_venta); break;
+      case 'precio-desc': lista.sort((a, b) => b.precio_venta - a.precio_venta); break;
+      default:            lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     return lista;
   }
@@ -78,6 +115,60 @@ export class ProductosPage implements OnInit {
     return cats.filter(c => c) as string[];
   }
 
+  get categoriasFiltradas() {
+    if (!this.busquedaCategoria) return this.categorias;
+    const b = this.busquedaCategoria.toLowerCase();
+    return this.categorias.filter(c => c.nombre.toLowerCase().includes(b));
+  }
+
+  get categoriaSeleccionadaNombre(): string {
+    const c = this.categorias.find(c => c.id_categoria === this.productoActual.id_categoria);
+    return c?.nombre || '';
+  }
+
+  get proveedorSeleccionadoNombre(): string {
+  const p = this.proveedores.find(p => p.id_proveedor === this.productoActual.id_proveedor);
+  return p?.nombre || '';
+}
+
+get proveedoresFiltrados() {
+  if (!this.busquedaProveedor) return this.proveedores;
+  const b = this.busquedaProveedor.toLowerCase();
+  return this.proveedores.filter(p => p.nombre.toLowerCase().includes(b));
+}
+
+  abrirSelectorCategoria() {
+    this.modoSeleccionCategoria = true;
+    this.busquedaCategoria = '';
+  }
+
+  abrirSelectorProveedor() {
+  this.modoSeleccionProveedor = true;
+  this.busquedaProveedor = '';
+}
+
+cerrarSelectorProveedor() {
+  this.modoSeleccionProveedor = false;
+}
+
+seleccionarProveedor(p: any) {
+  this.productoActual.id_proveedor = p.id_proveedor;
+  this.cerrarSelectorProveedor();
+}
+
+quitarProveedor() {
+  this.productoActual.id_proveedor = null;
+}
+
+  cerrarSelectorCategoria() {
+    this.modoSeleccionCategoria = false;
+  }
+
+  seleccionarCategoria(c: any) {
+    this.productoActual.id_categoria = c.id_categoria;
+    this.cerrarSelectorCategoria();
+  }
+
   esNuevo(producto: any): boolean {
     if (!producto.fecha_creacion) return false;
     const fecha = new Date(producto.fecha_creacion);
@@ -95,15 +186,47 @@ export class ProductosPage implements OnInit {
   }
 
   abrirFormulario(producto?: any) {
-    this.editando       = !!producto;
-    this.productoActual = producto ? { ...producto } : {
-      id_categoria: '', codigo: '', nombre: '', talla: '',
-      color: '', marca: '', imagen_url: '',
-      precio_compra: 0, precio_venta: 0, precio_original: null,
-      stock_actual: 0, stock_minimo: 5
-    };
-    this.modoFormulario = true;
+  this.editando       = !!producto;
+  this.productoActual = producto ? { ...producto } : {
+    id_categoria: '', codigo: '', nombre: '', talla: '',
+    color: '', marca: '', imagen_url: '',
+    precio_compra: 0, precio_venta: 0, precio_original: null,
+    stock_actual: 0, stock_minimo: 5
+  };
+
+  this.tallasProducto = [];
+  this.usaTallas = false;
+
+  if (this.editando) {
+    this.productoSvc.obtenerTallas(producto.id_producto).subscribe({
+      next: (res) => {
+        this.tallasProducto = res.datos;
+        this.usaTallas = this.tallasProducto.length > 0;
+      }
+    });
   }
+
+  this.modoFormulario = true;
+  }
+
+  toggleUsaTallas() {
+  this.usaTallas = !this.usaTallas;
+  if (this.usaTallas && this.tallasProducto.length === 0) {
+    this.tallasProducto = [{ talla: '', stock_actual: 0 }];
+  }
+}
+
+agregarFilaTalla() {
+  this.tallasProducto.push({ talla: '', stock_actual: 0 });
+}
+
+quitarFilaTalla(index: number) {
+  this.tallasProducto.splice(index, 1);
+}
+
+get stockTotalTallas(): number {
+  return this.tallasProducto.reduce((acc, t) => acc + (Number(t.stock_actual) || 0), 0);
+}
 
   cerrarFormulario() {
     this.modoFormulario = false;
@@ -111,49 +234,82 @@ export class ProductosPage implements OnInit {
   }
 
   async guardar() {
-    if (!this.productoActual.nombre || !this.productoActual.codigo ||
-        !this.productoActual.id_categoria) {
-      this.mostrarToast('Nombre, código y categoría son obligatorios.', 'warning');
+  if (!this.productoActual.nombre || !this.productoActual.codigo ||
+      !this.productoActual.id_categoria) {
+    this.mostrarToast('Nombre, código y categoría son obligatorios.', 'warning');
+    return;
+  }
+
+  if (this.usaTallas) {
+    const tallasValidas = this.tallasProducto.filter(t => t.talla && t.talla.trim());
+    if (tallasValidas.length === 0) {
+      this.mostrarToast('Agrega al menos una talla o desactiva el uso de tallas.', 'warning');
       return;
     }
+    this.productoActual.stock_actual = this.stockTotalTallas;
+  }
 
-    const loader = await this.loading.create({ message: 'Guardando...' });
-    await loader.present();
+  const loader = await this.loading.create({ message: 'Guardando...' });
+  await loader.present();
 
-    const accion = this.editando
-      ? this.productoSvc.editar(this.productoActual.id_producto, this.productoActual)
-      : this.productoSvc.crear(this.productoActual);
+  const accion = this.editando
+    ? this.productoSvc.editar(this.productoActual.id_producto, this.productoActual)
+    : this.productoSvc.crear(this.productoActual);
 
-    accion.subscribe({
-      next: async () => {
-        await loader.dismiss();
-        this.mostrarToast(this.editando ? 'Producto actualizado.' : 'Producto creado.', 'success');
-        this.cerrarFormulario();
-        this.cargarProductos();
-      },
-      error: async (err) => {
-        await loader.dismiss();
-        this.mostrarToast(err.error?.mensaje || 'Error al guardar.', 'danger');
+  accion.subscribe({
+    next: async (res: any) => {
+      const idProducto = this.editando ? this.productoActual.id_producto : res.datos.id_producto;
+
+      if (this.usaTallas) {
+        const tallasValidas = this.tallasProducto.filter(t => t.talla && t.talla.trim());
+        this.productoSvc.guardarTallas(idProducto, tallasValidas).subscribe({
+          next: async () => this.finalizarGuardado(loader),
+          error: async () => this.finalizarGuardado(loader)
+        });
+      } else {
+        this.finalizarGuardado(loader);
       }
-    });
+    },
+    error: async (err) => {
+      await loader.dismiss();
+      this.mostrarToast(err.error?.mensaje || 'Error al guardar.', 'danger');
+    }
+  });
+}
+
+async finalizarGuardado(loader: any) {
+  await loader.dismiss();
+  this.mensajeExito = this.editando ? 'Producto actualizado' : 'Producto creado';
+  this.modoExito = true;
+  this.cerrarFormulario();
+  this.cargarProductos();
+  setTimeout(() => this.modoExito = false, 2000);
+}
+
+  abrirConfirmarEliminar(producto: any) {
+    this.productoSeleccionado = producto;
+    this.modoConfirmarEliminar = true;
   }
 
-  async confirmarEliminar(producto: any) {
-    const alerta = await this.alert.create({
-      header:  'Eliminar producto',
-      message: `¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        { text: 'Eliminar', role: 'destructive', handler: () => this.eliminar(producto.id_producto) }
-      ]
-    });
-    await alerta.present();
+  cerrarConfirmarEliminar() {
+    this.modoConfirmarEliminar = false;
+    this.productoSeleccionado = null;
   }
 
-  eliminar(id: number) {
-    this.productoSvc.eliminar(id).subscribe({
-      next: () => { this.mostrarToast('Producto eliminado.', 'success'); this.cargarProductos(); },
-      error: (err) => { this.mostrarToast(err.error?.mensaje || 'Error al eliminar.', 'danger'); }
+  confirmarEliminarDefinitivo() {
+    const producto = this.productoSeleccionado;
+    this.productoSvc.eliminar(producto.id_producto).subscribe({
+      next: () => {
+        this.cerrarConfirmarEliminar();
+        this.mensajeExito = 'Producto eliminado';
+        this.modoExito = true;
+        this.cargarProductos();
+        setTimeout(() => this.modoExito = false, 2000);
+      },
+      error: (err) => {
+        this.mostrarToast(err.error?.mensaje || 'Error al eliminar.', 'danger');
+        this.cerrarConfirmarEliminar();
+      }
     });
   }
 
@@ -165,8 +321,10 @@ export class ProductosPage implements OnInit {
     event.target.style.display = 'none';
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
-    t.present();
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 2800);
   }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { ClienteService } from '../../services/cliente';
 
 @Component({
@@ -9,7 +9,6 @@ import { ClienteService } from '../../services/cliente';
   standalone: false,
 })
 export class RecuperarContrasenaPage {
-
 
   paso = 1;
 
@@ -22,11 +21,16 @@ export class RecuperarContrasenaPage {
   contrasena = '';
   confirmar  = '';
 
+  modoExito = false;
+
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
+
   constructor(
     private clienteSvc: ClienteService,
     public router:     Router,
-    private loading:    LoadingController,
-    private toast:      ToastController
+    private loading:    LoadingController
   ) {}
 
   async buscarCorreo() {
@@ -98,8 +102,8 @@ export class RecuperarContrasenaPage {
     this.clienteSvc.nuevaContrasena(this.token, this.contrasena).subscribe({
       next: async (res) => {
         await loader.dismiss();
-        this.mostrarToast(res.mensaje, 'success');
-        setTimeout(() => this.router.navigate(['/login-cliente']), 2000);
+        this.modoExito = true;
+        setTimeout(() => this.router.navigate(['/login-cliente']), 2500);
       },
       error: async (err) => {
         await loader.dismiss();
@@ -108,8 +112,10 @@ export class RecuperarContrasenaPage {
     });
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 4000, color });
-    t.present();
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 3200);
   }
 }

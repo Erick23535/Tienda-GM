@@ -1,0 +1,29 @@
+<div #backdrop *ngIf="visible" (click)="cancelar.emit()"
+     style="position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px;">
+
+  <div #card (click)="$event.stopPropagation()"
+       style="width:100%; max-width:360px; background:var(--admin-bg-elevated); border:1px solid var(--admin-border); border-radius:var(--admin-radius-lg); padding:24px; text-align:center; opacity:0; transform:scale(0.9);">
+
+    <div [style.background]="tipo === 'danger' ? 'rgba(239,68,68,0.12)' : 'var(--admin-gold-dim)'"
+         style="width:52px; height:52px; border-radius:var(--admin-radius-md); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+      <ion-icon [name]="tipo === 'danger' ? 'trash-outline' : 'alert-circle-outline'"
+                [style.color]="colorVar" style="font-size:26px;"></ion-icon>
+    </div>
+
+    <p style="font-size:16px; font-weight:700; color:var(--admin-text); margin:0 0 8px;">{{ titulo }}</p>
+    <p style="font-size:13px; color:var(--admin-text-faint); margin:0 0 22px; line-height:1.5;">{{ mensaje }}</p>
+
+    <div style="display:flex; gap:10px;">
+      <button (click)="cancelar.emit()"
+              style="flex:1; background:var(--admin-surface); border:1px solid var(--admin-border); border-radius:var(--admin-radius-sm); padding:12px; font-size:13px; font-weight:600; color:var(--admin-text-dim); cursor:pointer;">
+        {{ textoCancelar }}
+      </button>
+      <button (click)="confirmar.emit()"
+              [style.background]="tipo === 'danger' ? 'var(--admin-danger)' : 'var(--admin-gold)'"
+              [style.color]="tipo === 'danger' ? '#fff' : 'var(--admin-ink)'"
+              style="flex:1; border:none; border-radius:var(--admin-radius-sm); padding:12px; font-size:13px; font-weight:700; cursor:pointer;">
+        {{ textoConfirmar }}
+      </button>
+    </div>
+  </div>
+</div>

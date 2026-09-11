@@ -1,0 +1,12 @@
+<div (click)="clickable && abrir.emit()"
+     (keydown.enter)="clickable && abrir.emit()"
+     (keydown.space)="clickable && abrir.emit(); clickable && $event.preventDefault()"
+     [attr.role]="clickable ? 'button' : null"
+     [attr.tabindex]="clickable ? 0 : null"
+     [attr.aria-label]="clickable ? (etiqueta + ': ' + mostrar) : null"
+     [style.cursor]="clickable ? 'pointer' : 'default'"
+     style="background:var(--admin-surface); border:1px solid var(--admin-border); border-radius:var(--admin-radius-md); padding:16px; text-align:center;">
+  <ion-icon [name]="icono" aria-hidden="true" [style.color]="colorVar" style="font-size:22px; margin-bottom:8px;"></ion-icon>
+  <p style="font-size:18px; font-weight:800; color:var(--admin-text); margin:0 0 2px;">{{ mostrar }}</p>
+  <p style="font-size:11px; color:var(--admin-text-faint); margin:0;">{{ etiqueta }}</p>
+</div>

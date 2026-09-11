@@ -1,17 +1,7 @@
-<ion-content style="--background:#0a0a0a;">
-  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), #0a0a0a;">
+<ion-content style="--background:var(--admin-bg);">
+  <div style="min-height:100vh; background:radial-gradient(ellipse at 20% 10%, rgba(212,175,55,0.1) 0%, transparent 50%), var(--admin-bg);">
 
-    <!-- Header -->
-    <div style="background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(212,175,55,0.12); padding:16px 20px; display:flex; align-items:center; gap:12px;">
-      <div routerLink="/dashboard"
-           style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-        <ion-icon name="arrow-back-outline" style="font-size:18px; color:#d4af37;"></ion-icon>
-      </div>
-      <div>
-        <p style="font-size:11px; color:rgba(255,255,255,0.4); margin:0; text-transform:uppercase; letter-spacing:1px;">Administración</p>
-        <p style="font-size:17px; font-weight:700; color:#fff; margin:0;">Mi perfil</p>
-      </div>
-    </div>
+    <app-admin-header titulo="Mi perfil" subtitulo="Editar mis datos"></app-admin-header>
 
     <div style="padding:16px 16px 40px;">
 
@@ -20,49 +10,43 @@
 
         <div style="text-align:center; padding:24px 0 20px;">
           <div style="width:80px; height:80px; background:linear-gradient(135deg,#d4af37,#f5d76e); border-radius:24px; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 8px 24px rgba(212,175,55,0.3);">
-            <span style="font-size:32px; font-weight:800; color:#0a0a0a;">
+            <span style="font-size:32px; font-weight:800; color:var(--admin-ink);">
               {{ perfil.nombres?.charAt(0) }}{{ perfil.apellidos?.charAt(0) }}
             </span>
           </div>
-          <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 4px;">
+          <h2 style="font-size:20px; font-weight:700; color:var(--admin-text); margin:0 0 4px;">
             {{ perfil.nombres }} {{ perfil.apellidos }}
           </h2>
-          <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.2); border-radius:20px; padding:4px 14px;">
+          <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.2); border-radius:var(--admin-radius-lg); padding:4px 14px;">
             <ion-icon name="shield-checkmark-outline" style="font-size:14px; color:#d4af37;"></ion-icon>
             <span style="font-size:12px; color:#d4af37; font-weight:600; text-transform:capitalize;">{{ perfil.rol }}</span>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
-          <div style="background:rgba(212,175,55,0.08); border:1px solid rgba(212,175,55,0.2); border-radius:16px; padding:16px; text-align:center;">
-            <p style="font-size:24px; font-weight:800; color:#d4af37; margin:0 0 4px;">{{ perfil.total_ventas || 0 }}</p>
-            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Ventas registradas</p>
-          </div>
-          <div style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2); border-radius:16px; padding:16px; text-align:center;">
-            <p style="font-size:24px; font-weight:800; color:#22c55e; margin:0 0 4px;">${{ perfil.total_procesado || 0 }}</p>
-            <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:0;">Total procesado</p>
-          </div>
+          <app-stat-card icono="cart-outline" [valor]="perfil.total_ventas || 0" etiqueta="Ventas registradas" color="gold"></app-stat-card>
+          <app-stat-card icono="cash-outline" [valor]="'$' + (perfil.total_procesado || 0)" etiqueta="Total procesado" color="success"></app-stat-card>
         </div>
 
-        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; margin-bottom:16px;">
+        <div style="background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:var(--admin-radius-lg); overflow:hidden; margin-bottom:16px;">
 
-          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(var(--fg-rgb),0.05);">
             <div style="width:36px; height:36px; background:rgba(56,189,248,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
               <ion-icon name="mail-outline" style="font-size:16px; color:#38bdf8;"></ion-icon>
             </div>
             <div style="flex:1;">
-              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Correo</p>
-              <p style="font-size:14px; color:#fff; margin:0;">{{ perfil.correo }}</p>
+              <p style="font-size:11px; color:rgba(var(--fg-rgb),0.35); margin:0;">Correo</p>
+              <p style="font-size:14px; color:var(--admin-text); margin:0;">{{ perfil.correo }}</p>
             </div>
           </div>
 
-          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);">
+          <div style="display:flex; align-items:center; gap:14px; padding:14px 16px; border-bottom:1px solid rgba(var(--fg-rgb),0.05);">
             <div style="width:36px; height:36px; background:rgba(212,175,55,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
               <ion-icon name="person-outline" style="font-size:16px; color:#d4af37;"></ion-icon>
             </div>
             <div style="flex:1;">
-              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Usuario</p>
-              <p style="font-size:14px; color:#fff; margin:0;">{{ perfil.nombre_usuario }}</p>
+              <p style="font-size:11px; color:rgba(var(--fg-rgb),0.35); margin:0;">Usuario</p>
+              <p style="font-size:14px; color:var(--admin-text); margin:0;">{{ perfil.nombre_usuario }}</p>
             </div>
           </div>
 
@@ -71,41 +55,68 @@
               <ion-icon name="calendar-outline" style="font-size:16px; color:#a78bfa;"></ion-icon>
             </div>
             <div style="flex:1;">
-              <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">Miembro desde</p>
-              <p style="font-size:14px; color:#fff; margin:0;">{{ perfil.created_at | date:'dd/MM/yyyy' }}</p>
+              <p style="font-size:11px; color:rgba(var(--fg-rgb),0.35); margin:0;">Miembro desde</p>
+              <p style="font-size:14px; color:var(--admin-text); margin:0;">{{ perfil.created_at | date:'dd/MM/yyyy' }}</p>
             </div>
           </div>
 
         </div>
 
         <!-- Banner de la tienda -->
-        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:16px; margin-bottom:16px;">
+        <div style="background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:var(--admin-radius-lg); padding:16px; margin-bottom:16px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
             <ion-icon name="image-outline" style="font-size:16px; color:#d4af37;"></ion-icon>
-            <p style="font-size:13px; font-weight:700; color:#fff; margin:0;">Banner de la tienda</p>
+            <p style="font-size:13px; font-weight:700; color:var(--admin-text); margin:0;">Banner de la tienda</p>
           </div>
-          <p style="font-size:12px; color:rgba(255,255,255,0.35); margin:0 0 12px;">
+          <p style="font-size:12px; color:rgba(var(--fg-rgb),0.35); margin:0 0 12px;">
             Imagen de fondo que verán los clientes en el inicio.
           </p>
 
           <div *ngIf="bannerUrl"
-               style="width:100%; height:100px; border-radius:12px; overflow:hidden; margin-bottom:12px; border:1px solid rgba(212,175,55,0.2);">
+               style="width:100%; height:100px; border-radius:var(--admin-radius-sm); overflow:hidden; margin-bottom:12px; border:1px solid rgba(212,175,55,0.2);">
             <img [src]="bannerUrl" style="width:100%; height:100%; object-fit:cover;"
                  (error)="$event.target.style.display='none'">
           </div>
 
-          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(212,175,55,0.3); border-radius:12px; padding:4px 14px; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(212,175,55,0.3); border-radius:var(--admin-radius-sm); padding:4px 14px; margin-bottom:10px;">
             <ion-icon name="link-outline" style="font-size:16px; color:#d4af37; margin-right:10px;"></ion-icon>
-            <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:44px; font-size:13px;"
+            <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:44px; font-size:13px;"
                        placeholder="URL de imagen del banner"
                        [(ngModel)]="bannerUrl">
             </ion-input>
           </div>
 
           <button (click)="guardarBanner()"
-                  style="width:100%; height:44px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:10px; color:#0a0a0a; font-size:13px; font-weight:700; cursor:pointer;">
+                  style="width:100%; height:44px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:10px; color:var(--admin-ink); font-size:13px; font-weight:700; cursor:pointer;">
             Guardar banner
           </button>
+        </div>
+
+        <!-- Interruptor IVA -->
+        <div style="background:rgba(var(--fg-rgb),0.04); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:var(--admin-radius-lg); padding:16px; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div [style.background]="ivaActivo ? 'rgba(34,197,94,0.12)' : 'rgba(var(--fg-rgb),0.06)'"
+                   style="width:40px; height:40px; border-radius:var(--admin-radius-sm); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <ion-icon name="receipt-outline"
+                          [style.color]="ivaActivo ? '#22c55e' : 'rgba(var(--fg-rgb),0.35)'"
+                          style="font-size:18px;"></ion-icon>
+              </div>
+              <div>
+                <p style="font-size:13px; font-weight:700; color:var(--admin-text); margin:0;">IVA (15%)</p>
+                <p style="font-size:11px; color:rgba(var(--fg-rgb),0.35); margin:0;">
+                  {{ ivaActivo ? 'Se aplica en todas las compras de la tienda' : 'No se está aplicando IVA' }}
+                </p>
+              </div>
+            </div>
+
+            <div (click)="toggleIva()"
+                 [style.background]="ivaActivo ? 'linear-gradient(135deg,#22c55e,#4ade80)' : 'rgba(var(--fg-rgb),0.1)'"
+                 style="width:50px; height:28px; border-radius:var(--admin-radius-lg); position:relative; cursor:pointer; flex-shrink:0; transition:all 0.25s;">
+              <div [style.left]="ivaActivo ? '25px' : '3px'"
+                   style="position:absolute; top:3px; width:22px; height:22px; background:#fff; border-radius:50%; transition:all 0.25s; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Acciones -->
@@ -138,41 +149,41 @@
 
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
           <div (click)="seccion = 'perfil'"
-               style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-            <ion-icon name="arrow-back-outline" style="font-size:18px; color:#fff;"></ion-icon>
+               style="width:36px; height:36px; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="arrow-back-outline" style="font-size:18px; color:var(--admin-text);"></ion-icon>
           </div>
-          <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0;">Editar datos</h2>
+          <h2 style="font-size:20px; font-weight:700; color:var(--admin-text); margin:0;">Editar datos</h2>
         </div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
           <ion-icon name="person-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      placeholder="Nombres *" [(ngModel)]="editNombres">
           </ion-input>
         </div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
           <ion-icon name="person-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      placeholder="Apellidos *" [(ngModel)]="editApellidos">
           </ion-input>
         </div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:24px;">
           <ion-icon name="mail-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      type="email" placeholder="Correo *" [(ngModel)]="editCorreo">
           </ion-input>
         </div>
 
         <button (click)="guardarDatos()"
-                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:var(--admin-ink); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
           <ion-icon name="save-outline" style="font-size:18px;"></ion-icon>
           Guardar cambios
         </button>
 
         <button (click)="seccion = 'perfil'"
-                style="width:100%; height:48px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:rgba(255,255,255,0.4); font-size:15px; cursor:pointer;">
+                style="width:100%; height:48px; background:transparent; border:1px solid rgba(var(--fg-rgb),0.1); border-radius:14px; color:rgba(var(--fg-rgb),0.4); font-size:15px; cursor:pointer;">
           Cancelar
         </button>
 
@@ -183,31 +194,31 @@
 
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
           <div (click)="seccion = 'perfil'"
-               style="width:36px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-            <ion-icon name="arrow-back-outline" style="font-size:18px; color:#fff;"></ion-icon>
+               style="width:36px; height:36px; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <ion-icon name="arrow-back-outline" style="font-size:18px; color:var(--admin-text);"></ion-icon>
           </div>
-          <h2 style="font-size:20px; font-weight:700; color:#fff; margin:0;">Cambiar contraseña</h2>
+          <h2 style="font-size:20px; font-weight:700; color:var(--admin-text); margin:0;">Cambiar contraseña</h2>
         </div>
 
-        <div style="background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.15); border-radius:16px; padding:14px 16px; margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+        <div style="background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.15); border-radius:var(--admin-radius-md); padding:14px 16px; margin-bottom:20px; display:flex; align-items:center; gap:12px;">
           <ion-icon name="information-circle-outline" style="font-size:22px; color:#38bdf8; flex-shrink:0;"></ion-icon>
-          <p style="font-size:13px; color:rgba(255,255,255,0.5); margin:0; line-height:1.5;">
+          <p style="font-size:13px; color:rgba(var(--fg-rgb),0.5); margin:0; line-height:1.5;">
             La nueva contraseña debe tener mínimo 6 caracteres.
           </p>
         </div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
           <ion-icon name="lock-closed-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      type="password" placeholder="Contraseña actual" [(ngModel)]="passActual">
           </ion-input>
         </div>
 
-        <div style="height:1px; background:rgba(255,255,255,0.06); margin:16px 0;"></div>
+        <div style="height:1px; background:rgba(var(--fg-rgb),0.06); margin:16px 0;"></div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:12px;">
           <ion-icon name="lock-open-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      type="password" placeholder="Nueva contraseña" [(ngModel)]="passNueva">
           </ion-input>
         </div>
@@ -215,11 +226,11 @@
         <div *ngIf="passNueva.length > 0"
              style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:0 4px;">
           <div style="flex:1; display:flex; gap:4px;">
-            <div [style.background]="passNueva.length >= 1 ? (passNueva.length >= 8 ? '#22c55e' : passNueva.length >= 6 ? '#d4af37' : '#ef4444') : 'rgba(255,255,255,0.08)'"
+            <div [style.background]="passNueva.length >= 1 ? (passNueva.length >= 8 ? '#22c55e' : passNueva.length >= 6 ? '#d4af37' : '#ef4444') : 'rgba(var(--fg-rgb),0.08)'"
                  style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
-            <div [style.background]="passNueva.length >= 6 ? (passNueva.length >= 8 ? '#22c55e' : '#d4af37') : 'rgba(255,255,255,0.08)'"
+            <div [style.background]="passNueva.length >= 6 ? (passNueva.length >= 8 ? '#22c55e' : '#d4af37') : 'rgba(var(--fg-rgb),0.08)'"
                  style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
-            <div [style.background]="passNueva.length >= 8 ? '#22c55e' : 'rgba(255,255,255,0.08)'"
+            <div [style.background]="passNueva.length >= 8 ? '#22c55e' : 'rgba(var(--fg-rgb),0.08)'"
                  style="flex:1; height:4px; border-radius:2px; transition:all 0.3s;"></div>
           </div>
           <span [style.color]="passNueva.length >= 8 ? '#22c55e' : passNueva.length >= 6 ? '#d4af37' : '#ef4444'"
@@ -228,9 +239,9 @@
           </span>
         </div>
 
-        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:4px 16px; margin-bottom:24px;">
+        <div style="display:flex; align-items:center; background:rgba(var(--fg-rgb),0.05); border:1px solid rgba(var(--fg-rgb),0.07); border-radius:14px; padding:4px 16px; margin-bottom:24px;">
           <ion-icon name="lock-open-outline" style="font-size:18px; color:rgba(212,175,55,0.5); margin-right:12px;"></ion-icon>
-          <ion-input style="--color:#fff; --placeholder-color:rgba(255,255,255,0.25); --background:transparent; height:48px; font-size:15px;"
+          <ion-input style="--color:var(--admin-text); --placeholder-color:rgba(var(--fg-rgb),0.25); --background:transparent; height:48px; font-size:15px;"
                      type="password" placeholder="Confirmar nueva contraseña" [(ngModel)]="passConfirmar">
           </ion-input>
         </div>
@@ -247,13 +258,13 @@
         </div>
 
         <button (click)="cambiarContrasena()"
-                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:#0a0a0a; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
+                style="width:100%; height:52px; background:linear-gradient(135deg,#d4af37,#f5d76e); border:none; border-radius:14px; color:var(--admin-ink); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px; box-shadow:0 8px 24px rgba(212,175,55,0.28);">
           <ion-icon name="checkmark-circle-outline" style="font-size:18px;"></ion-icon>
           Cambiar contraseña
         </button>
 
         <button (click)="seccion = 'perfil'"
-                style="width:100%; height:48px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:rgba(255,255,255,0.4); font-size:15px; cursor:pointer;">
+                style="width:100%; height:48px; background:transparent; border:1px solid rgba(var(--fg-rgb),0.1); border-radius:14px; color:rgba(var(--fg-rgb),0.4); font-size:15px; cursor:pointer;">
           Cancelar
         </button>
 
@@ -261,4 +272,6 @@
 
     </div>
   </div>
+
+  <app-toast [abierto]="toastAbierto" [mensaje]="mensajeToast" [tipo]="tipoToast"></app-toast>
 </ion-content>

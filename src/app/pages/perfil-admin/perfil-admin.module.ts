@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { PerfilAdminPageRoutingModule } from './perfil-admin-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { PerfilAdminPage } from './perfil-admin.page';
 
@@ -13,6 +14,7 @@ import { PerfilAdminPage } from './perfil-admin.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     PerfilAdminPageRoutingModule
   ],
   declarations: [PerfilAdminPage]

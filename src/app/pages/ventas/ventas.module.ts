@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { VentasPageRoutingModule } from './ventas-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { VentasPage } from './ventas.page';
 
@@ -13,6 +14,7 @@ import { VentasPage } from './ventas.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     VentasPageRoutingModule
   ],
   declarations: [VentasPage]

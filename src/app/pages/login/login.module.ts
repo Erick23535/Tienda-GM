@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { LoginPageRoutingModule } from './login-routing.module';
 import { LoginPage } from './login.page';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 @NgModule({
   imports: [
@@ -12,7 +13,8 @@ import { LoginPage } from './login.page';
     FormsModule,
     IonicModule,
     RouterModule,
-    LoginPageRoutingModule
+    LoginPageRoutingModule,
+    SharedUiModule
   ],
   declarations: [LoginPage]
 })

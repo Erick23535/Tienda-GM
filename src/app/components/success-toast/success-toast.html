@@ -1,0 +1,16 @@
+<div #backdrop *ngIf="visible"
+     style="position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; pointer-events:none;">
+
+  <div #card [style.border-color]="colorVar"
+       style="width:100%; max-width:300px; background:var(--admin-bg-elevated); border:1px solid var(--admin-border-gold); border-radius:var(--admin-radius-lg); padding:28px 24px; text-align:center; animation:admin-toast-pop 0.25s ease;">
+    <ion-icon [name]="iconoResuelto" [style.color]="colorVar" style="font-size:44px;"></ion-icon>
+    <p style="font-size:14px; font-weight:600; color:var(--admin-text); margin:14px 0 0; line-height:1.4;">{{ mensaje }}</p>
+  </div>
+</div>
+
+<style>
+  @keyframes admin-toast-pop {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+</style>

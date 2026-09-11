@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { CategoriasPageRoutingModule } from './categorias-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 
 import { CategoriasPage } from './categorias.page';
 
@@ -13,6 +14,7 @@ import { CategoriasPage } from './categorias.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedUiModule,
     CategoriasPageRoutingModule
   ],
   declarations: [CategoriasPage]

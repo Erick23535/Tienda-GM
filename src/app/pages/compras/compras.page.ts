@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { CompraService } from '../../services/compra';
 import { ProductoService } from '../../services/producto';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-compras',
@@ -26,14 +29,45 @@ export class ComprasPage implements OnInit {
 
   // Historial
   compras:     any[] = [];
+  ordenCompras = 'fecha-desc';
   compraDetalle: any = null;
+
+  get comprasOrdenadas() {
+    const lista = [...this.compras];
+    switch (this.ordenCompras) {
+      case 'fecha-asc':  lista.sort((a, b) => new Date(a.fecha_compra).getTime() - new Date(b.fecha_compra).getTime()); break;
+      case 'total-desc': lista.sort((a, b) => Number(b.total) - Number(a.total)); break;
+      case 'total-asc':  lista.sort((a, b) => Number(a.total) - Number(b.total)); break;
+      default:           lista.sort((a, b) => new Date(b.fecha_compra).getTime() - new Date(a.fecha_compra).getTime());
+    }
+    return lista;
+  }
+  modoConfirmarCompra = false;
+
+  // Notificaciones nuevas
+  notiCarrito: any = null;
+  modoAvisoProveedor = false;
+  modoExito = false;
+  mensajeExito = '';
+  ultimaCompraId: number | null = null;
+  ultimaCompraTotal = 0;
+
+  modoConfirmarAnular = false;
+  compraAAnular: any = null;
+
+  // Selector de talla (productos con variantes)
+  modoSeleccionTalla = false;
+  productoParaTalla: any = null;
+
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
 
   constructor(
     private compraSvc:   CompraService,
     private productoSvc: ProductoService,
-    private alert:       AlertController,
     private loading:     LoadingController,
-    private toast:       ToastController
+    private authSvc:      AuthService
   ) {}
 
   ngOnInit() {
@@ -125,24 +159,57 @@ export class ComprasPage implements OnInit {
   }
 
   agregarAlCarrito(producto: any) {
-    const existe = this.carrito.find(i => i.id_producto === producto.id_producto);
+    const usaTallas = producto.tallas && producto.tallas.length > 0;
+
+    if (usaTallas) {
+      this.productoParaTalla = producto;
+      this.modoSeleccionTalla = true;
+      return;
+    }
+
+    this.agregarAlCarritoFinal(producto, null, null);
+  }
+
+  seleccionarTallaCompra(t: any) {
+    this.agregarAlCarritoFinal(this.productoParaTalla, t.id_talla, t.talla);
+    this.modoSeleccionTalla = false;
+    this.productoParaTalla = null;
+  }
+
+  cerrarSelectorTalla() {
+    this.modoSeleccionTalla = false;
+    this.productoParaTalla = null;
+  }
+
+  agregarAlCarritoFinal(producto: any, idTalla: number | null, tallaTexto: string | null) {
+    const claveUnica = idTalla ? `${producto.id_producto}-${idTalla}` : `${producto.id_producto}`;
+    const existe = this.carrito.find(i => i.clave === claveUnica);
+
     if (existe) {
       existe.cantidad++;
       existe.subtotal = existe.cantidad * existe.precio_unitario;
-      this.mostrarToast(`+1 ${producto.nombre}`, 'success');
+      this.mostrarNotiCarrito(producto, existe.cantidad);
     } else {
       const precio = Number(producto.precio_compra) || 0;
       this.carrito.push({
+        clave:           claveUnica,
         id_producto:     producto.id_producto,
+        id_talla:        idTalla,
         nombre:          producto.nombre,
         codigo:          producto.codigo,
-        talla:           producto.talla,
+        talla:           tallaTexto || producto.talla,
+        imagen_url:      producto.imagen_url,
         precio_unitario: precio,
         cantidad:        1,
         subtotal:        precio
       });
-      this.mostrarToast(`${producto.nombre} agregado`, 'success');
+      this.mostrarNotiCarrito(producto, 1);
     }
+  }
+
+  mostrarNotiCarrito(producto: any, cantidad: number) {
+    this.notiCarrito = { ...producto, cantidadEnCarrito: cantidad };
+    setTimeout(() => this.notiCarrito = null, 2200);
   }
 
   cambiarCantidad(item: any, delta: number) {
@@ -167,9 +234,10 @@ export class ComprasPage implements OnInit {
     this.carrito = this.carrito.filter(i => i !== item);
   }
 
-  async registrarCompra() {
+  registrarCompra() {
     if (!this.id_proveedor_sel) {
-      this.mostrarToast('Selecciona un proveedor.', 'warning');
+      this.modoAvisoProveedor = true;
+      setTimeout(() => this.modoAvisoProveedor = false, 2200);
       return;
     }
     if (this.carrito.length === 0) {
@@ -183,38 +251,40 @@ export class ComprasPage implements OnInit {
       return;
     }
 
-    const alerta = await this.alert.create({
-      header:  'Confirmar compra',
-      message: `Total: $${this.totalCarrito.toFixed(2)}\nSe actualizará el stock automáticamente.`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        { text: 'Confirmar', handler: () => this.procesarCompra() }
-      ]
-    });
-    await alerta.present();
+    this.modoConfirmarCompra = true;
+  }
+
+  cerrarConfirmarCompra() {
+    this.modoConfirmarCompra = false;
   }
 
   async procesarCompra() {
+    this.modoConfirmarCompra = false;
     const loader = await this.loading.create({ message: 'Registrando compra...' });
     await loader.present();
 
     const payload = {
-      id_proveedor: this.id_proveedor_sel,
-      id_usuario:   1,
-      detalle: this.carrito.map(i => ({
-        id_producto:     i.id_producto,
-        cantidad:        i.cantidad,
-        precio_unitario: i.precio_unitario
+  id_proveedor: this.id_proveedor_sel,
+  id_usuario:   this.authSvc.getIdUsuario(),
+  detalle: this.carrito.map(i => ({
+    id_producto:     i.id_producto,
+    id_talla:        i.id_talla || null,
+    cantidad:        i.cantidad,
+    precio_unitario: i.precio_unitario
       }))
     };
 
     this.compraSvc.crear(payload).subscribe({
       next: async (res) => {
         await loader.dismiss();
-        this.mostrarToast(`Compra #${res.datos.id_compra} registrada. Total: $${res.datos.total}`, 'success');
+        this.ultimaCompraId    = res.datos.id_compra;
+        this.ultimaCompraTotal = res.datos.total;
+        this.mensajeExito      = `Compra #${res.datos.id_compra} registrada`;
+        this.modoExito = true;
         this.carrito          = [];
         this.id_proveedor_sel = '';
         this.cargarProductos();
+        setTimeout(() => this.modoExito = false, 2800);
       },
       error: async (err) => {
         await loader.dismiss();
@@ -232,32 +302,105 @@ export class ComprasPage implements OnInit {
     });
   }
 
-  async confirmarAnular(compra: any) {
-    const alerta = await this.alert.create({
-      header:  'Anular compra',
-      message: `¿Anular compra #${compra.id_compra}? El stock será revertido.`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Anular', role: 'destructive',
-          handler: () => {
-            this.compraSvc.anular(compra.id_compra).subscribe({
-              next: () => {
-                this.mostrarToast('Compra anulada y stock revertido.', 'success');
-                this.compraDetalle = null;
-                this.cargarCompras();
-              },
-              error: (err) => this.mostrarToast(err.error?.mensaje || 'Error.', 'danger')
-            });
-          }
-        }
-      ]
+  verFacturaCompra(compra: any) {
+    this.compraSvc.obtener(compra.id_compra).subscribe({
+      next: (res) => {
+        const c = res.datos;
+        const detalle = c.detalle.map((d: any) => ({
+          nombre: d.nombre,
+          cantidad: d.cantidad,
+          precio_unitario: d.precio_unitario,
+          subtotal: d.subtotal
+        }));
+        this.generarFacturaCompraPDF(c, detalle);
+      },
+      error: () => this.mostrarToast('Error al cargar la factura.', 'danger')
     });
-    await alerta.present();
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 3000, color });
-    t.present();
+  generarFacturaCompraPDF(compra: any, detalle: any[]) {
+    const doc = new jsPDF();
+
+    doc.setFillColor(10, 10, 10);
+    doc.rect(0, 0, 210, 34, 'F');
+    doc.setTextColor(212, 175, 55);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TIENDA GM', 14, 16);
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Factura de compra', 14, 24);
+    doc.setFontSize(9);
+    doc.text(`N.° ${compra.id_compra.toString().padStart(6, '0')}`, 14, 30);
+
+    const fecha = new Date(compra.fecha_compra).toLocaleString('es-ES');
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.text(`Fecha: ${fecha}`, 150, 30);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Proveedor', 14, 44);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Nombre: ${compra.proveedor || '-'}`, 14, 50);
+    doc.text(`Registrado por: ${compra.usuario || '-'}`, 14, 55);
+
+    const filas = detalle.map(d => [
+      d.nombre,
+      `${d.cantidad}`,
+      `$${Number(d.precio_unitario).toFixed(2)}`,
+      `$${Number(d.subtotal).toFixed(2)}`
+    ]);
+
+    autoTable(doc, {
+      startY: 64,
+      head: [['Producto', 'Cant.', 'P. Unitario', 'Subtotal']],
+      body: filas,
+      headStyles: { fillColor: [212, 175, 55], textColor: [10, 10, 10] },
+      styles: { fontSize: 9 },
+    });
+
+    const finalY = (doc as any).lastAutoTable.finalY + 10;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(`TOTAL: $${Number(compra.total).toFixed(2)}`, 150, finalY);
+
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Tienda GM - comprobante interno de compra a proveedor', 14, 285);
+
+    doc.save(`factura-compra-${compra.id_compra}-tienda-gm.pdf`);
+  }
+
+  confirmarAnular(compra: any) {
+    this.compraAAnular = compra;
+    this.modoConfirmarAnular = true;
+  }
+
+  cancelarAnular() {
+    this.modoConfirmarAnular = false;
+    this.compraAAnular = null;
+  }
+
+  anularConfirmado() {
+    const compra = this.compraAAnular;
+    this.modoConfirmarAnular = false;
+    this.compraSvc.anular(compra.id_compra).subscribe({
+      next: () => {
+        this.mostrarToast('Compra anulada y stock revertido.', 'success');
+        this.compraDetalle = null;
+        this.cargarCompras();
+      },
+      error: (err) => this.mostrarToast(err.error?.mensaje || 'Error.', 'danger')
+    });
+  }
+
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 2800);
   }
 }

@@ -1,71 +1,124 @@
 <ion-content>
   <div class="login-wrapper">
-    <div class="bg-gradient"></div>
 
-    <div class="login-container">
+    <div style="position:absolute; top:16px; right:16px; z-index:5;">
+      <app-theme-toggle></app-theme-toggle>
+    </div>
 
-      <!-- Logo -->
-      <div class="logo-area">
+    <!-- Panel de marca (solo escritorio) -->
+    <div class="brand-panel">
+      <div class="brand-panel-content">
         <div class="logo-icon">
           <ion-icon name="bag-handle-outline"></ion-icon>
         </div>
         <h1 class="brand-name">TIENDA GM</h1>
-        <p class="brand-sub">Tu tienda de moda favorita</p>
+
+        <h2 class="brand-headline">Tu talla, tu estilo,<br>tu tienda.</h2>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <ion-icon name="heart-outline"></ion-icon>
+            <span>Guarda tus productos favoritos</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="receipt-outline"></ion-icon>
+            <span>Sigue tus pedidos en tiempo real</span>
+          </div>
+          <div class="feature-item">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span>Entérate de novedades al instante</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Card -->
-      <div class="login-card">
+      <div class="brand-panel-deco"></div>
+    </div>
 
-        <h2 class="card-title">Hola de nuevo</h2>
-        <p class="card-subtitle">Inicia sesión en tu cuenta</p>
+    <!-- Panel de formulario -->
+    <div class="form-panel">
+      <div class="login-container">
 
-        <div class="input-group">
-          <div class="input-icon">
-            <ion-icon name="mail-outline"></ion-icon>
+        <div class="logo-area mobile-only">
+          <div class="logo-icon">
+            <ion-icon name="bag-handle-outline"></ion-icon>
           </div>
-          <ion-input
-            class="custom-input"
-            type="email"
-            placeholder="Correo electrónico"
-            [(ngModel)]="correo">
-          </ion-input>
+          <h1 class="brand-name">TIENDA GM</h1>
+          <p class="brand-sub">Tu tienda de moda favorita</p>
         </div>
 
-        <div class="input-group">
-          <div class="input-icon">
-            <ion-icon name="lock-closed-outline"></ion-icon>
+        <div class="login-card">
+
+          <h2 class="card-title">Hola de nuevo</h2>
+          <p class="card-subtitle">Inicia sesión en tu cuenta</p>
+
+          <form (ngSubmit)="iniciarSesion()">
+
+            <div class="input-group">
+              <div class="input-icon">
+                <ion-icon name="mail-outline"></ion-icon>
+              </div>
+              <ion-input
+                class="custom-input"
+                type="email"
+                placeholder="Correo electrónico"
+                [(ngModel)]="correo"
+                name="correo"
+                autocomplete="email">
+              </ion-input>
+            </div>
+
+            <div class="input-group">
+              <div class="input-icon">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+              </div>
+              <ion-input
+                class="custom-input"
+                [type]="mostrarPass ? 'text' : 'password'"
+                placeholder="Contraseña"
+                [(ngModel)]="contrasena"
+                name="contrasena"
+                autocomplete="current-password">
+              </ion-input>
+              <div class="toggle-pass" (click)="togglePass()">
+                <ion-icon [name]="mostrarPass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </div>
+            </div>
+
+            <div class="forgot-link" routerLink="/recuperar-contrasena">
+              ¿Olvidaste tu contraseña?
+            </div>
+
+            <!-- Error inline -->
+            <div class="inline-error" *ngIf="errorMsg">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>{{ errorMsg }}</span>
+            </div>
+
+            <button type="submit" class="btn-login" [disabled]="cargando">
+              <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+              <span *ngIf="!cargando">Ingresar</span>
+              <ion-icon *ngIf="!cargando" name="arrow-forward-outline"></ion-icon>
+            </button>
+          </form>
+
+          <div class="divider">
+            <span>¿No tienes cuenta?</span>
           </div>
-          <ion-input
-            class="custom-input"
-            type="password"
-            placeholder="Contraseña"
-            [(ngModel)]="contrasena">
-          </ion-input>
+
+          <button class="btn-outline" routerLink="/registro-cliente">
+            <ion-icon name="person-add-outline"></ion-icon>
+            <span>Crear cuenta nueva</span>
+          </button>
+
+          <button class="btn-ghost" routerLink="/login">
+            <span>Acceso administración</span>
+          </button>
+
         </div>
-
-        <div class="forgot-link" routerLink="/recuperar-contrasena">
-          ¿Olvidaste tu contraseña?
-        </div>
-
-        <button class="btn-login" (click)="iniciarSesion()">
-          <span>Ingresar</span>
-          <ion-icon name="arrow-forward-outline"></ion-icon>
-        </button>
-
-        <div class="divider">
-          <span>¿No tienes cuenta?</span>
-        </div>
-
-        <button class="btn-outline" routerLink="/registro-cliente">
-          <ion-icon name="person-add-outline"></ion-icon>
-          <span>Crear cuenta nueva</span>
-        </button>
-
-        <button class="btn-ghost" routerLink="/login">
-          <span>Acceso administración</span>
-        </button>
-
       </div>
     </div>
+
   </div>
+
+  <app-toast [abierto]="toastAbierto" [mensaje]="mensajeToast" [tipo]="tipoToast"></app-toast>
 </ion-content>

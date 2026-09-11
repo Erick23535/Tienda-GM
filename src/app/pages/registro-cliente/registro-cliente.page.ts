@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { ClienteService } from '../../services/cliente';
 
 @Component({
@@ -21,6 +21,10 @@ export class RegistroClientePage {
   pregunta2  = '';
   respuesta2 = '';
 
+  modoSeleccionPregunta1 = false;
+  modoSeleccionPregunta2 = false;
+  modoExito = false;
+
   preguntasDisponibles = [
     '¿Cuál es el nombre de tu mascota?',
     '¿En qué ciudad naciste?',
@@ -32,15 +36,48 @@ export class RegistroClientePage {
     '¿Cuál fue tu primer trabajo?'
   ];
 
+  toastAbierto = false;
+  mensajeToast = '';
+  tipoToast: 'success' | 'danger' | 'warning' = 'danger';
+
   constructor(
     private clienteSvc: ClienteService,
     private router:     Router,
-    private loading:    LoadingController,
-    private toast:      ToastController
+    private loading:    LoadingController
   ) {}
 
   preguntasDisponibles2() {
     return this.preguntasDisponibles.filter(p => p !== this.pregunta1);
+  }
+
+  abrirSelectorPregunta1() {
+    this.modoSeleccionPregunta1 = true;
+  }
+
+  cerrarSelectorPregunta1() {
+    this.modoSeleccionPregunta1 = false;
+  }
+
+  seleccionarPregunta1(p: string) {
+    this.pregunta1 = p;
+    if (this.pregunta2 === p) {
+      this.pregunta2  = '';
+      this.respuesta2 = '';
+    }
+    this.cerrarSelectorPregunta1();
+  }
+
+  abrirSelectorPregunta2() {
+    this.modoSeleccionPregunta2 = true;
+  }
+
+  cerrarSelectorPregunta2() {
+    this.modoSeleccionPregunta2 = false;
+  }
+
+  seleccionarPregunta2(p: string) {
+    this.pregunta2 = p;
+    this.cerrarSelectorPregunta2();
   }
 
   async registrarse() {
@@ -77,8 +114,8 @@ export class RegistroClientePage {
     }).subscribe({
       next: async (res) => {
         await loader.dismiss();
-        this.mostrarToast(res.mensaje, 'success');
-        setTimeout(() => this.router.navigate(['/login-cliente']), 2000);
+        this.modoExito = true;
+        setTimeout(() => this.router.navigate(['/login-cliente']), 2500);
       },
       error: async (err) => {
         await loader.dismiss();
@@ -87,8 +124,10 @@ export class RegistroClientePage {
     });
   }
 
-  async mostrarToast(mensaje: string, color: string) {
-    const t = await this.toast.create({ message: mensaje, duration: 4000, color });
-    t.present();
+  mostrarToast(mensaje: string, tipo: 'success' | 'danger' | 'warning' = 'danger') {
+    this.mensajeToast = mensaje;
+    this.tipoToast = tipo;
+    this.toastAbierto = true;
+    setTimeout(() => this.toastAbierto = false, 3200);
   }
 }

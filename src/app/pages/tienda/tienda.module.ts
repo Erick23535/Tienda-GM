@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { TiendaPageRoutingModule } from './tienda-routing.module';
+import { SharedUiModule } from '../../components/shared-ui.module';
 import { TiendaPage } from './tienda.page';
 
 @NgModule({
@@ -12,6 +13,7 @@ import { TiendaPage } from './tienda.page';
     FormsModule,
     IonicModule,
     RouterModule,
+    SharedUiModule,
     TiendaPageRoutingModule
   ],
   declarations: [TiendaPage]
