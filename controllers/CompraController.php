@@ -13,16 +13,27 @@ class CompraController {
 
     // GET /compras — listar compras
     public function listar() {
-        $stmt = $this->db->query("
+        $limit  = min(200, max(1, (int)($_GET['limit']  ?? 50)));
+        $offset = max(0, (int)($_GET['offset'] ?? 0));
+
+        $stmt = $this->db->prepare("
             SELECT c.id_compra, c.fecha_compra, c.total, c.estado,
                    p.nombre as proveedor,
-                   CONCAT(u.nombres, ' ', u.apellidos) as usuario
+                   CONCAT(u.nombres, ' ', u.apellidos) as usuario,
+                   GROUP_CONCAT(
+                       CONCAT(pr.nombre, ' (x', dc.cantidad, ')')
+                       SEPARATOR ', '
+                   ) as productos_resumen
             FROM compras c
             LEFT JOIN proveedores p ON c.id_proveedor = p.id_proveedor
             LEFT JOIN usuarios u ON c.id_usuario = u.id_usuario
+            LEFT JOIN detalle_compras dc ON dc.id_compra = c.id_compra
+            LEFT JOIN productos pr ON pr.id_producto = dc.id_producto
+            GROUP BY c.id_compra
             ORDER BY c.fecha_compra DESC
-            LIMIT 50
+            LIMIT $limit OFFSET $offset
         ");
+        $stmt->execute();
         responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
@@ -87,22 +98,24 @@ class CompraController {
             // Insertar detalle y aumentar stock
             foreach ($detalle as $item) {
                 $subtotal = $item['precio_unitario'] * $item['cantidad'];
+                $id_talla = $item['id_talla'] ?? null;
 
                 $this->db->prepare("
                     INSERT INTO detalle_compras
-                        (id_compra, id_producto, cantidad, precio_unitario, subtotal)
-                    VALUES (?, ?, ?, ?, ?)
+                        (id_compra, id_producto, id_talla, cantidad, precio_unitario, subtotal)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ")->execute([
                     $id_compra,
                     $item['id_producto'],
+                    $id_talla,
                     $item['cantidad'],
                     $item['precio_unitario'],
                     $subtotal
                 ]);
 
-                // Obtener stock actual
+                // Obtener stock actual (bloquea la fila mientras dura la transacción)
                 $stmt = $this->db->prepare("
-                    SELECT stock_actual FROM productos WHERE id_producto = ?
+                    SELECT stock_actual FROM productos WHERE id_producto = ? FOR UPDATE
                 ");
                 $stmt->execute([$item['id_producto']]);
                 $producto = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -110,13 +123,20 @@ class CompraController {
                 $stock_anterior = $producto['stock_actual'];
                 $stock_nuevo    = $stock_anterior + $item['cantidad'];
 
-                // Actualizar stock y precio de compra
+                // Actualizar stock general y precio de compra
                 $this->db->prepare("
                     UPDATE productos SET
                         stock_actual  = ?,
                         precio_compra = ?
                     WHERE id_producto = ?
                 ")->execute([$stock_nuevo, $item['precio_unitario'], $item['id_producto']]);
+
+                // Si el producto maneja tallas, suma el stock también a la talla recibida
+                if ($id_talla) {
+                    $this->db->prepare("
+                        UPDATE producto_tallas SET stock_actual = stock_actual + ? WHERE id_talla = ?
+                    ")->execute([$item['cantidad'], $id_talla]);
+                }
 
                 // Registrar movimiento
                 $this->db->prepare("
@@ -139,7 +159,8 @@ class CompraController {
 
         } catch (Exception $e) {
             $this->db->rollBack();
-            responder(500, "Error: " . $e->getMessage());
+            error_log("CompraController - " . $e->getMessage());
+            responder(500, "Ocurrió un error al procesar la solicitud.");
         }
     }
 
@@ -175,6 +196,15 @@ class CompraController {
                     UPDATE productos SET stock_actual = ? WHERE id_producto = ?
                 ")->execute([$stock_nuevo, $item['id_producto']]);
 
+                // Si la línea usó una talla específica, revertir también su stock.
+                if (!empty($item['id_talla'])) {
+                    $this->db->prepare("
+                        UPDATE producto_tallas
+                        SET stock_actual = GREATEST(0, stock_actual - ?)
+                        WHERE id_talla = ?
+                    ")->execute([$item['cantidad'], $item['id_talla']]);
+                }
+
                 $this->db->prepare("
                     INSERT INTO movimientos_inventario
                         (id_producto, id_usuario, tipo_movimiento, cantidad,
@@ -196,7 +226,8 @@ class CompraController {
 
         } catch (Exception $e) {
             $this->db->rollBack();
-            responder(500, "Error: " . $e->getMessage());
+            error_log("CompraController - " . $e->getMessage());
+            responder(500, "Ocurrió un error al procesar la solicitud.");
         }
     }
 

@@ -22,14 +22,31 @@ class ReporteController {
         ");
         $hoy = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Total ventas del mes
-        $stmt = $this->db->query("
-            SELECT COALESCE(SUM(total), 0) as ingresos_mes
-            FROM ventas
-            WHERE MONTH(fecha_venta) = MONTH(NOW())
-            AND YEAR(fecha_venta) = YEAR(NOW())
-            AND estado = 'completada'
-        ");
+        // Ingresos del periodo: por defecto el mes en curso, o un rango
+        // explícito si el admin filtra por fechas desde el dashboard.
+        $desde = $_GET['desde'] ?? null;
+        $hasta = $_GET['hasta'] ?? null;
+        $fechaValida = fn($f) => is_string($f) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $f);
+
+        if ($fechaValida($desde) && $fechaValida($hasta)) {
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as ventas_periodo, COALESCE(SUM(total), 0) as ingresos_mes
+                FROM ventas
+                WHERE DATE(fecha_venta) BETWEEN ? AND ?
+                AND estado = 'completada'
+            ");
+            $stmt->execute([$desde, $hasta]);
+            $rangoPersonalizado = true;
+        } else {
+            $stmt = $this->db->query("
+                SELECT COUNT(*) as ventas_periodo, COALESCE(SUM(total), 0) as ingresos_mes
+                FROM ventas
+                WHERE MONTH(fecha_venta) = MONTH(NOW())
+                AND YEAR(fecha_venta) = YEAR(NOW())
+                AND estado = 'completada'
+            ");
+            $rangoPersonalizado = false;
+        }
         $mes = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Total productos con stock bajo
@@ -47,12 +64,45 @@ class ReporteController {
         $clientes = $stmt->fetch(PDO::FETCH_ASSOC);
 
         responder(200, "OK", [
-            "ventas_hoy"     => (int)$hoy['total_ventas'],
-            "ingresos_hoy"   => (float)$hoy['ingresos_hoy'],
-            "ingresos_mes"   => (float)$mes['ingresos_mes'],
-            "stock_bajo"     => (int)$stockBajo['stock_bajo'],
-            "total_clientes" => (int)$clientes['total_clientes']
+            "ventas_hoy"          => (int)$hoy['total_ventas'],
+            "ingresos_hoy"        => (float)$hoy['ingresos_hoy'],
+            "ingresos_mes"        => (float)$mes['ingresos_mes'],
+            "ventas_periodo"      => (int)$mes['ventas_periodo'],
+            "ingresos_rango_personalizado" => $rangoPersonalizado,
+            "stock_bajo"          => (int)$stockBajo['stock_bajo'],
+            "total_clientes"      => (int)$clientes['total_clientes']
         ]);
+    }
+
+    // GET /reportes/productos-vendidos — detalle por producto para el
+    // reporte imprimible de ingresos (mismo rango que /reportes/resumen).
+    public function productosVendidos() {
+        $desde = $_GET['desde'] ?? null;
+        $hasta = $_GET['hasta'] ?? null;
+        $fechaValida = fn($f) => is_string($f) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $f);
+
+        if ($fechaValida($desde) && $fechaValida($hasta)) {
+            $condicionFecha = "DATE(v.fecha_venta) BETWEEN ? AND ?";
+            $params = [$desde, $hasta];
+        } else {
+            $condicionFecha = "MONTH(v.fecha_venta) = MONTH(NOW()) AND YEAR(v.fecha_venta) = YEAR(NOW())";
+            $params = [];
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT p.nombre, p.codigo, p.talla, p.color, p.marca,
+                   SUM(dv.cantidad) as cantidad_vendida,
+                   SUM(dv.subtotal) as ingresos
+            FROM detalle_ventas dv
+            JOIN ventas v ON v.id_venta = dv.id_venta
+            JOIN productos p ON p.id_producto = dv.id_producto
+            WHERE v.estado = 'completada'
+            AND $condicionFecha
+            GROUP BY dv.id_producto
+            ORDER BY cantidad_vendida DESC
+        ");
+        $stmt->execute($params);
+        responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     // GET /reportes/ventas-dia — ventas de hoy detalladas
@@ -87,21 +137,44 @@ class ReporteController {
 
     // GET /reportes/mas-vendidos — top 10 productos más vendidos
     public function masVendidos() {
-        $stmt = $this->db->query("
-            SELECT p.nombre, p.codigo, p.talla, p.color,
-                   SUM(dv.cantidad) as total_vendido,
-                   SUM(dv.subtotal) as total_ingresos
-            FROM detalle_ventas dv
-            JOIN productos p ON dv.id_producto = p.id_producto
-            JOIN ventas v ON dv.id_venta = v.id_venta
-            WHERE v.estado = 'completada'
-            GROUP BY dv.id_producto
-            ORDER BY total_vendido DESC
-            LIMIT 10
-        ");
-        $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        responder(200, "OK", $productos);
-    }
+    $stmt = $this->db->query("
+        SELECT 
+            p.id_producto,
+            p.codigo,
+            p.nombre,
+            p.talla,
+            p.imagen_url,
+            SUM(dv.cantidad) as total_vendido,
+            SUM(dv.subtotal) as total_ingresos
+        FROM detalle_ventas dv
+        JOIN productos p ON dv.id_producto = p.id_producto
+        JOIN ventas v ON dv.id_venta = v.id_venta
+        WHERE v.estado = 'completada'
+        GROUP BY p.id_producto
+        ORDER BY total_vendido DESC
+        LIMIT 10
+    ");
+    responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
+}
+
+    // GET /reportes/proveedores-top
+public function proveedoresTop() {
+    $stmt = $this->db->query("
+        SELECT 
+            p.id_proveedor,
+            p.nombre,
+            p.ruc,
+            COUNT(c.id_compra) as total_compras,
+            SUM(c.total) as total_invertido
+        FROM proveedores p
+        JOIN compras c ON p.id_proveedor = c.id_proveedor
+        WHERE c.estado = 'recibida'
+        GROUP BY p.id_proveedor
+        ORDER BY total_invertido DESC
+        LIMIT 10
+    ");
+    responder(200, "OK", $stmt->fetchAll(PDO::FETCH_ASSOC));
+}
 
     // GET /reportes/ventas-semana — ventas de los últimos 7 días
     public function ventasSemana() {

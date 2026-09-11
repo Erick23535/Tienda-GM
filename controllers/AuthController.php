@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/response.php';
+require_once __DIR__ . '/../helpers/auth.php';
 
 class AuthController {
 
@@ -20,6 +21,11 @@ class AuthController {
 
         if (!$correo || !$contrasena) {
             responder(400, "Correo y contraseña son obligatorios.");
+        }
+
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (demasiadosIntentos($this->db, $correo, $ip)) {
+            responder(429, "Demasiados intentos. Intenta de nuevo en unos minutos.");
         }
 
         // Buscar usuario
@@ -57,10 +63,11 @@ class AuthController {
         ]);
 
         responder(200, "Login exitoso.", [
-            "token"     => $token,
-            "rol"       => $usuario['rol'],
-            "nombres"   => $usuario['nombres'],
-            "apellidos" => $usuario['apellidos']
+        "token"       => $token,
+        "id_usuario"  => $usuario['id_usuario'],
+        "rol"         => $usuario['rol'],
+        "nombres"     => $usuario['nombres'],
+        "apellidos"   => $usuario['apellidos']
         ]);
     }
 

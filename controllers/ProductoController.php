@@ -12,30 +12,88 @@ class ProductoController {
     }
 
     public function listar() {
-        $stmt = $this->db->prepare("
-            SELECT p.*, c.nombre AS categoria, v.nombre AS proveedor
-            FROM productos p
-            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-            LEFT JOIN proveedores v ON p.id_proveedor = v.id_proveedor
-            ORDER BY p.id_producto DESC
+    $stmt = $this->db->prepare("
+        SELECT p.*, c.nombre AS categoria, v.nombre AS proveedor
+        FROM productos p
+        LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+        LEFT JOIN proveedores v ON p.id_proveedor = v.id_proveedor
+        ORDER BY p.id_producto DESC
+    ");
+    $stmt->execute();
+    $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($productos) {
+        $ids          = array_column($productos, 'id_producto');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $stmtTallas = $this->db->prepare("
+            SELECT id_producto, id_talla, talla, stock_actual
+            FROM producto_tallas WHERE id_producto IN ($placeholders)
         ");
-        $stmt->execute();
-        $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        responder(200, "OK", $productos);
+        $stmtTallas->execute($ids);
+
+        $tallasPorProducto = [];
+        foreach ($stmtTallas->fetchAll(PDO::FETCH_ASSOC) as $t) {
+            $tallasPorProducto[$t['id_producto']][] = $t;
+        }
+
+        foreach ($productos as &$p) {
+            $p['tallas'] = $tallasPorProducto[$p['id_producto']] ?? [];
+        }
+        unset($p);
+
+        $stmtResenas = $this->db->prepare("
+            SELECT id_producto, AVG(calificacion) AS promedio, COUNT(*) AS total
+            FROM resenas_productos WHERE id_producto IN ($placeholders)
+            GROUP BY id_producto
+        ");
+        $stmtResenas->execute($ids);
+
+        $resenasPorProducto = [];
+        foreach ($stmtResenas->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $resenasPorProducto[$r['id_producto']] = $r;
+        }
+
+        foreach ($productos as &$p) {
+            $r = $resenasPorProducto[$p['id_producto']] ?? null;
+            $p['calificacion_promedio'] = $r ? round((float)$r['promedio'], 1) : null;
+            $p['total_resenas'] = $r ? (int)$r['total'] : 0;
+        }
+        unset($p);
     }
 
-    public function obtener($id) {
-        $stmt = $this->db->prepare("
-            SELECT p.*, c.nombre AS categoria, v.nombre AS proveedor
-            FROM productos p
-            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-            LEFT JOIN proveedores v ON p.id_proveedor = v.id_proveedor
-            WHERE p.id_producto = ?
-        ");
-        $stmt->execute([$id]);
-        $producto = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$producto) responder(404, "Producto no encontrado.");
-        responder(200, "OK", $producto);
+    responder(200, "OK", $productos);
+}
+
+   public function obtener($id) {
+    $stmt = $this->db->prepare("
+        SELECT p.*, c.nombre AS categoria, v.nombre AS proveedor
+        FROM productos p
+        LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+        LEFT JOIN proveedores v ON p.id_proveedor = v.id_proveedor
+        WHERE p.id_producto = ?
+    ");
+    $stmt->execute([$id]);
+    $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$producto) responder(404, "Producto no encontrado.");
+
+    $stmt = $this->db->prepare("
+        SELECT id_talla, talla, stock_actual FROM producto_tallas
+        WHERE id_producto = ? ORDER BY talla ASC
+    ");
+    $stmt->execute([$id]);
+    $producto['tallas'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt = $this->db->prepare("
+        SELECT AVG(calificacion) AS promedio, COUNT(*) AS total
+        FROM resenas_productos WHERE id_producto = ?
+    ");
+    $stmt->execute([$id]);
+    $r = $stmt->fetch(PDO::FETCH_ASSOC);
+    $producto['calificacion_promedio'] = $r && $r['total'] > 0 ? round((float)$r['promedio'], 1) : null;
+    $producto['total_resenas'] = $r ? (int)$r['total'] : 0;
+
+    responder(200, "OK", $producto);
     }
 
     public function crear() {
@@ -43,7 +101,8 @@ class ProductoController {
 
         $campos = ['id_categoria','nombre','codigo','precio_compra','precio_venta','stock_actual'];
         foreach ($campos as $campo) {
-            if (empty($body[$campo]) && $body[$campo] !== 0) {
+            $valor = $body[$campo] ?? null;
+            if (empty($valor) && $valor !== 0) {
                 responder(400, "El campo '$campo' es obligatorio.");
             }
         }

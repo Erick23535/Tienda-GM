@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/response.php';
+require_once __DIR__ . '/../helpers/auth.php';
 
 class ClienteController {
 
@@ -44,6 +45,11 @@ class ClienteController {
         }
 
         $hash = password_hash($contrasena, PASSWORD_BCRYPT);
+        // Las respuestas de seguridad también se hashean: si la BD se filtra,
+        // no quedan expuestas en texto plano.
+        $hashRespuesta1 = password_hash(strtolower($respuesta1), PASSWORD_BCRYPT);
+        $hashRespuesta2 = password_hash(strtolower($respuesta2), PASSWORD_BCRYPT);
+
         $stmt = $this->db->prepare("
             INSERT INTO clientes
                 (nombres, apellidos, correo, contrasena_hash,
@@ -53,8 +59,8 @@ class ClienteController {
         ");
         $stmt->execute([
             $nombres, $apellidos, $correo, $hash,
-            $pregunta1, strtolower($respuesta1),
-            $pregunta2, strtolower($respuesta2)
+            $pregunta1, $hashRespuesta1,
+            $pregunta2, $hashRespuesta2
         ]);
 
         responder(201, "Registro exitoso. Ya puedes iniciar sesión.");
@@ -68,6 +74,11 @@ class ClienteController {
 
         if (!$correo || !$contrasena) {
             responder(400, "Correo y contraseña son obligatorios.");
+        }
+
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (demasiadosIntentos($this->db, $correo, $ip)) {
+            responder(429, "Demasiados intentos. Intenta de nuevo en unos minutos.");
         }
 
         $stmt = $this->db->prepare("
@@ -116,6 +127,11 @@ class ClienteController {
 
         if (!$correo) responder(400, "El correo es obligatorio.");
 
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (demasiadosIntentos($this->db, $correo, $ip)) {
+            responder(429, "Demasiados intentos. Intenta de nuevo en unos minutos.");
+        }
+
         $stmt = $this->db->prepare("
             SELECT pregunta1, pregunta2
             FROM clientes
@@ -124,6 +140,13 @@ class ClienteController {
         ");
         $stmt->execute([$correo]);
         $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Se registra como "intento" tanto si existe la cuenta como si no,
+        // para frenar el barrido de correos (enumeración de usuarios).
+        $this->db->prepare("
+            INSERT INTO intentos_login (correo_intentado, ip, exitoso)
+            VALUES (?, ?, ?)
+        ")->execute([$correo, $ip, $cliente ? 1 : 0]);
 
         if (!$cliente) {
             responder(404, "No existe una cuenta con ese correo.");
@@ -146,6 +169,11 @@ class ClienteController {
             responder(400, "Todos los campos son obligatorios.");
         }
 
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (demasiadosIntentos($this->db, $correo, $ip)) {
+            responder(429, "Demasiados intentos. Intenta de nuevo en unos minutos.");
+        }
+
         $stmt = $this->db->prepare("
             SELECT id_cliente, respuesta1, respuesta2
             FROM clientes
@@ -159,8 +187,15 @@ class ClienteController {
             responder(404, "No existe una cuenta con ese correo.");
         }
 
-        if ($respuesta1 !== $cliente['respuesta1'] ||
-            $respuesta2 !== $cliente['respuesta2']) {
+        $correcta1 = $this->coincideRespuesta($respuesta1, $cliente['respuesta1']);
+        $correcta2 = $this->coincideRespuesta($respuesta2, $cliente['respuesta2']);
+
+        $this->db->prepare("
+            INSERT INTO intentos_login (correo_intentado, ip, exitoso)
+            VALUES (?, ?, ?)
+        ")->execute([$correo, $ip, ($correcta1 && $correcta2) ? 1 : 0]);
+
+        if (!$correcta1 || !$correcta2) {
             responder(401, "Las respuestas no son correctas.");
         }
 
@@ -213,5 +248,18 @@ class ClienteController {
         ")->execute([$registro['id_token']]);
 
         responder(200, "Contraseña actualizada correctamente.");
+    }
+
+    // Compara una respuesta de seguridad con el valor guardado. Soporta
+    // el hash bcrypt (registros nuevos) y, como respaldo, el texto plano
+    // en minúsculas que usaban los registros creados antes de este cambio.
+    private function coincideRespuesta(string $respuesta, ?string $guardada): bool {
+        if ($guardada === null) return false;
+
+        if (str_starts_with($guardada, '$2y$') || str_starts_with($guardada, '$2a$') || str_starts_with($guardada, '$2b$')) {
+            return password_verify(strtolower($respuesta), $guardada);
+        }
+
+        return hash_equals($guardada, strtolower($respuesta));
     }
 }
